@@ -1,0 +1,33 @@
+{
+  "id": "company-name-role-title-year",
+  "title": "Job Title",
+  "company": "Company Name",
+  "location": "City, State/Province, Country",
+  "compensation": "Salary range or hourly rate",
+  "raw_text_excerpt": "Brief summary of the job posting extracted from the PDF.",
+  "sections": {
+    "who_we_are": "Description of the company and what they do.",
+    "role": "Description of the role and what the candidate will be doing.",
+    "requirements": [
+      "Required skill or qualification 1",
+      "Required skill or qualification 2",
+      "Required skill or qualification 3"
+    ],
+    "culture_and_benefits": "Information about company culture, benefits, and work environment.",
+    "impact": "Description of the impact or opportunity this role provides."
+  },
+  "required_skills": [
+    "skill-1",
+    "skill-2",
+    "skill-3"
+  ],
+  "nice_to_have_skills": [
+    "bonus-skill-1",
+    "bonus-skill-2"
+  ],
+  "keywords": [
+    "keyword-1",
+    "keyword-2",
+    "keyword-3"
+  ]
+}

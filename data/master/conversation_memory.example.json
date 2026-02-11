@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "notes": "Long-term Q&A and mappings so the agent can avoid asking repeat questions about your background.",
+  "qa_history": [
+    {
+      "id": "example-skill-mapping",
+      "question": "Have you used [Technology] in a professional project?",
+      "answer": "Yes, at [Company] where I [brief description of experience].",
+      "skills": ["technology-name"],
+      "experience_refs": [
+        {
+          "company": "Company Name",
+          "role": "Your Role",
+          "hint": "Key technologies or achievements"
+        }
+      ],
+      "timestamp": "2026-02-11T00:00:00Z"
+    }
+  ],
+  "skill_mappings": {
+    "technology-name": [
+      {
+        "company": "Company Name",
+        "role": "Your Role",
+        "notes": "Brief description of how you used this technology."
+      }
+    ]
+  }
+}
