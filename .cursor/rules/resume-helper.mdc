@@ -10,15 +10,23 @@ alwaysApply: false
 ## Purpose
 
 This rule file instructs a **Cursor AI agent** to tailor the master LaTeX resume
-to specific job postings **without running any external scripts or executables**.
-All work must be performed through direct file reads/edits (e.g., `ReadFile`,
-`ApplyPatch`, manual JSON updates). The agent should:
+to specific job postings. All work is done via direct file reads/edits (e.g.,
+Read, StrReplace, manual JSON updates). The agent should:
 
 - Read PDFs and LaTeX directly.
 - Hand-author the small JSON files needed for structured data and memory.
 - Iterate on LaTeX until layout and highlighting rules are satisfied.
-- Explicitly avoid invoking interpreters, shell commands, or helper binaries—only use
-Cursor-native editing capabilities.
+- **Compile the tailored LaTeX and inspect the PDF** when a LaTeX toolchain is
+  available (e.g. `pdflatex` via terminal): use the compiled PDF as the source of
+  truth to verify one page, correct org structure, and no layout violations.
+  If no compiler is available, instruct the user to compile and validate from the
+  PDF once it exists.
+- For all other steps (extraction, JSON, LaTeX authoring), avoid external scripts
+  or helper binaries; use Cursor-native editing capabilities.
+
+**Role & objective:** Act as an expert Career Strategist and LaTeX engineer. The goal
+is to create the single strongest possible application for the specific role—strategize
+the narrative, do not just fill in blanks.
 
 ---
 
@@ -75,9 +83,86 @@ as needed.
 
 ---
 
+## Formatting and layout standards
+
+- **Header (immutable source)**  
+  Copy the header verbatim from the master resume. Typical elements for a software
+  engineering student: primary email, phone, LinkedIn, GitHub, portfolio. Omit
+  university email unless the user’s master resume includes it. If the master
+  includes a work-authorization line (e.g. “Canadian Citizen”), preserve it.
+- **Section strategy**  
+  Default to dropping a **Professional Summary** to save space unless the user’s
+  master resume or instructions say otherwise. Prefer letting experience bullets
+  carry the narrative.
+- **Experience/project ordering**  
+  Use the order defined in the master resume unless the user specifies a different
+  order for this job. Prefer recent, high-impact roles first when ranking for fit.
+- **Job header format (mutable section)**  
+  Format each role in the middle section as:
+  - `\textbf{Company Name} \hfill Date Range\\`
+  - `\textit{Role} | Tech Stack`
+  - Omit location (city/country) from job headers unless the master resume
+    consistently includes it. Multiple roles at the same company should appear
+    under a single company header (see master resume structure).
+- **Organization headings: use only when multiple sub-sections exist**  
+  Organization headings (`\resumeOrgHeading{...}`) should **only** be used when
+  there are **multiple** roles or projects under that organization in the tailored
+  resume. If only one role/project from an organization is included, omit the
+  organization heading and show the role/project directly.
+  - Example: If "McGill Engineering Games" has both "VP Machine" and "Software
+    Team Member" in the tailored resume → use `\resumeOrgHeading{McGill Engineering Games}`.
+  - Example: If only "RoomieRanks Website" from "McGill Computer Science Games"
+    is included → omit the org heading, show the project directly.
+- **No mixing across organization headers (critical)**  
+  Each role or project in the master resume belongs to exactly one organization
+  heading (the `\resumeOrgHeading{...}` under which it appears in the master).
+  When tailoring:
+  - **Preserve the org–experience mapping:** A role or project must only appear
+    under the **same** organization heading as in the master (if an org heading
+    is used). Never move an
+    experience under a different org header (e.g. do not put “McGill Formula
+    Electric Website” under “McGill Engineering Games” if it appears under
+    “McGill Computer Science Games” in the master).
+  - **Preserve order within each org:** When including multiple experiences from
+    the same org, keep the same relative order as in the master (e.g. under
+    “McGill Computer Science Games”, if the master has Team Captain then
+    RoomieRanks then Formula Electric, do not list RoomieRanks first and Team
+    Captain second). Reordering for “relevance” applies only to which **orgs**
+    or **experiences** appear first as whole blocks, not to swapping items across
+    orgs or reordering within an org.
+  - Before writing LaTeX, explicitly list which experiences belong to which
+    org from the master and ensure the tailored resume respects that mapping.
+
+---
+
+## Bullet point engineering: RCC and orphan control
+
+**Rendered Character Count (RCC)** is used as a proxy for line length when the
+rendered PDF is not visible:
+
+- **RCC definition:** Count all visible letters, numbers, punctuation, and spaces.
+  Exclude LaTeX commands: `\textbf{Project}` counts as 7 characters (P-r-o-j-e-c-t),
+  not 15. `\&` counts as 1 character.
+- **“Danger zone” rule:** Do **not** generate bullets with an RCC between **100 and
+  190**. That range tends to produce a single orphan word or short fragment on the
+  next line. Either keep bullets under ~100 RCC (short, one line) or clearly over
+  ~190 (comfortably two lines).
+- **Reframing:** Rephrase tasks to match JD keywords and responsibilities while
+  preserving truth. Prioritize bullets that demonstrate impact and relevance to
+  the role.
+
+---
+
 ## High-level workflow for the agent
 
 When the user asks to tailor a resume for a job:
+
+**Phase 1: Intake & strategy (critical first step)**  
+Before generating any LaTeX, analyze the Job Description (JD) and master resume, then
+decide whether to ask the user 2–3 clarifying questions. Goal: uncover context not
+explicitly in the resume that could be pivotal for this specific JD. Check
+`conversation_memory.json` first; if similar roles or skills were already discussed,
+reuse that and ask only when something is ambiguous or unmapped.
 
 1. **Identify job folder**
    - Ask the user for the job-id or path (e.g. `data/jobs/deepmind-research-202602/`),
@@ -142,51 +227,84 @@ When the user asks to tailor a resume for a job:
    - Replace the middle experience section with a new LaTeX block that:
      - Contains only the selected experiences and bullets.
      - Uses the same macros/environments as the master resume.
+     - **Use org headings only when multiple sub-sections exist:** If an
+       organization has multiple roles/projects in the tailored resume, use
+       `\resumeOrgHeading{...}`. If only one role/project from an org is included,
+       omit the org heading and show the role/project directly.
+     - **Respect org–experience mapping:** Each experience appears only under
+       the same `\resumeOrgHeading{...}` as in the master (when org headings are
+       used); do not mix roles from
+       one org under another org’s header, and keep the same order of roles
+       within each org as in the master.
    - **Bold relevant skills**:
      - For each key skill relevant to this job:
        - Ensure at least one occurrence in the body is wrapped with `\textbf{...}`.
        - Avoid double-wrapping text that is already bold.
      - Prioritize bolding required skills over nice-to-have skills.
-   - Make all edits directly in LaTeX—do not rely on code generation scripts.
+   - **LaTeX technical constraints:**
+     - Clean code: no internal artifacts or citations; use standard `\item` and
+       the same structure as the master resume.
+     - Escape special characters: `&` → `\&`, `%` → `\%`, `$` → `\$`. Use
+       `\textbf{...}` for bold, not raw markup.
+   - Write the result only to `tailored_resume.tex` (no extra code blocks or
+     commentary inside the file). Make all edits directly in LaTeX—do not rely
+     on code generation scripts.
 
 8. **Compile to PDF**
    - Write `tailored_resume.tex` to the job folder.
-   - If a LaTeX toolchain is available:
-     - Use a terminal command (e.g. `pdflatex` or `latexmk`) to compile it into
-       `tailored_resume.pdf`.
-     - Capture and inspect the LaTeX log for warnings:
-       - Overfull/underfull boxes.
-       - Multi-page output.
-   - If compilation tools are not available:
-     - Clearly tell the user and provide the final LaTeX so they can compile manually.
+   - **Always attempt to compile** when a LaTeX toolchain is available (e.g.
+     `pdflatex` or `latexmk` in PATH). Run the compiler from the job folder or from
+     the directory that provides required inputs (e.g. `data/master` if the resume
+     uses `\input{...}` from there). Use a second run if the build uses references.
+   - Capture and inspect the **LaTeX log** for:
+     - Overfull/underfull boxes (fix if severe).
+     - Multi-page output or “page 2” warnings.
+     - Missing file errors (e.g. `glyphtounicode.tex`); adjust working directory
+       or paths if needed.
+   - If no compiler is available: tell the user how to compile and that the agent
+     will validate rules once `tailored_resume.pdf` is present (e.g. after the user
+     compiles and re-runs the tailoring request).
 
-9. **Validate layout and rules**
-   The agent must check (best-effort, heuristically if necessary) that:
+9. **Inspect the PDF and validate rules**
+   After compilation, the agent **must inspect the generated PDF** (when the file
+   exists and is readable) to confirm the rules are respected. Use the PDF as the
+   source of truth for layout, not only the LaTeX source.
 
-   1. **Exactly one page**
-      - The compiled PDF should have **exactly one page**.
-      - If tools exist to check page count, use them.
-      - Otherwise, ensure the LaTeX document class and geometry match the master
-        resume and watch for any “page 2” content or warnings.
+   - **Inspect the PDF output**
+     - Open or read `tailored_resume.pdf` (e.g. via Read or a PDF-capable tool) so
+       that the rendered output can be checked.
+     - Verify **exactly one page**: no content on a second page.
+     - Verify **organization structure**: each org heading in the PDF is followed
+       only by the roles/projects that belong to that org in the master; no mixing
+       (e.g. “McGill Engineering Games” must not be followed by “McGill Formula
+       Electric Website” if that project belongs under “McGill Computer Science
+       Games” in the master).
+     - Check **order within each org**: under each heading, roles appear in the
+       same order as in the master resume.
+     - Look for **orphans and layout**: single words or short fragments alone on
+       a line at the end of a bullet (RCC danger zone); severe overfull lines.
 
-   2. **Bullet length rules**
-      - Bullet points should **aim** to fit on a single line.
-      - It is acceptable for some bullets to run onto a second line **if needed**,
-        but avoid bullets that are just barely over one line (e.g., “1.1 lines”).
-      - Heuristic approach:
-        - Use character/word count as a proxy:
-          - Short, punchy bullets (e.g. under ~120–150 characters) are preferred.
-          - If a bullet is very long (e.g. > ~200 characters), consider:
-            - Splitting into two bullets, or
-            - Removing low-signal phrases.
+   - **Cross-check with LaTeX and heuristics when PDF is not inspectable**
+     If the PDF cannot be read (e.g. binary only, no viewer):
+     - Use the LaTeX log for page count and overfull/underfull warnings.
+     - Re-verify org–experience mapping and order in the `.tex` source.
+     - Apply RCC to bullets to avoid the 100–190 danger zone.
 
-   3. **Bolded relevant skills**
-      - For the set of **required skills** from the job posting:
-        - Confirm that each appears bolded at least once in the LaTeX body
-          (not just in a skills list, ideally in bullets or role descriptions).
+   - **Checklist the agent must satisfy (from PDF when possible)**
+     1. **Exactly one page** — no second page; single-page limit is mandatory.
+     2. **Org headings only when multiple sub-sections** — organization headings
+        (`\resumeOrgHeading{...}`) appear only when there are multiple roles/projects
+        under that org; single items are shown without an org heading.
+     3. **No mixing across org headers** — when org headings are used, headings and
+        their listed roles match
+        the master’s org–experience mapping and order.
+     4. **Bullet length / orphans** — no obvious “1.1 line” bullets or single-word
+        orphans; RCC danger zone (100–190) avoided in source.
+     5. **Bolded relevant skills** — required job-posting skills appear bolded at
+        least once in the body (not only in the skills list).
 
 10. **Adjustment loop**
-    - If any of the above rules are violated:
+    - If inspection (step 9) finds any rule violated:
       - Modify only the **mutable** middle section of `tailored_resume.tex`.
       - Reasonable adjustments include:
         - Removing the **least relevant** bullet or experience.
@@ -194,11 +312,13 @@ When the user asks to tailor a resume for a job:
           - Dropping redundant qualifiers.
           - Moving secondary details to another bullet.
         - Adding/removing bold markers for skills.
-      - Recompile and re-check constraints.
+        - Fixing org–experience mapping or order so the PDF matches the master.
+      - **Recompile** (step 8) and **re-inspect the PDF** (step 9) to confirm the
+        violation is fixed before considering the tailoring complete.
       - Limit this loop to a reasonable number of iterations (e.g. up to 5).
     - If the agent cannot satisfy constraints automatically:
       - Explain clearly what is failing (e.g., “this bullet remains too long”,
-        “second page still appears”), and
+        “second page still appears”, “Formula Electric still under wrong heading”), and
       - Propose specific edits for the user to accept or tweak.
 
 ---
@@ -231,6 +351,9 @@ Typical workflow for the user:
 
 ## Agent behavior guidelines
 
+- **Compile and inspect the PDF** after generating or updating `tailored_resume.tex`:
+  run the LaTeX compiler when available, then read/inspect the generated PDF to
+  confirm one page, correct org headings and order, and no orphan or layout issues.
 - Prefer **editing existing files** (`.tex`, `.json`) over rewriting from scratch,
   to keep diffs small and understandable.
 - When updating JSON files:
@@ -238,8 +361,14 @@ Typical workflow for the user:
   - Preserve existing information and extend it rather than discarding history.
 - Be explicit in comments in LaTeX when marking boundaries or decisions, e.g.:
   - `% Selected for OpenAI research engineer role – focus on ML and infra`
-- Always keep in mind the three core constraints:
-  1. Exactly one page.
-  2. No barely-over-one-line bullets where it can be avoided.
-  3. Relevant skills from the job posting are clearly bolded.
+- Always keep in mind the core constraints:
+  1. Exactly one page (exceeding it is failure).
+  2. Org headings only when multiple sub-sections: use `\resumeOrgHeading{...}` only
+     when there are multiple roles/projects from that org; omit for single items.
+  3. No bullets in the RCC danger zone (100–190); prefer short or clearly multi-line.
+  4. Relevant skills from the job posting are clearly bolded.
+  5. Clean LaTeX: escape `\&`, `\%`, `\$`; no internal artifacts.
+  6. No mixing across org headers: when org headings are used, each experience stays
+     under the same `\resumeOrgHeading{...}` as in the master, with the same order
+     within that org.
 

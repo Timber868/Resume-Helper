@@ -13,8 +13,60 @@ Resume Helper is a pure Cursor wrapper that leverages the AI agent configured in
 ## Prerequisites
 
 - [Cursor](https://cursor.sh/) editor installed
-- A LaTeX distribution (for compiling PDFs) - optional but recommended
 - Your master resume in LaTeX format
+- **LaTeX distribution** (for compiling tailored resumes to PDF) — optional but recommended; the agent can compile and inspect the PDF to validate layout when a compiler is available (see below)
+
+## LaTeX: dependency and installation
+
+Resume Helper produces `.tex` files. To get PDFs (and to let the agent validate the output), you need a LaTeX distribution that provides `pdflatex`. On **Windows**, use one of the following.
+
+### Option 1: MiKTeX (recommended on Windows)
+
+1. **Download**  
+   Go to [miktex.org/download](https://miktex.org/download) and download the **Windows** installer (e.g. “Basic MiKTeX Installer”).
+
+2. **Install**  
+   - Run the installer.  
+   - Choose **“Install for: Just for me”** (or “All users” if you prefer).  
+   - When asked about missing packages, choose **“Install missing packages on-the-fly: Yes”** so MiKTeX can download packages when you compile.  
+   - Finish the installation.
+
+3. **Verify**  
+   Close and reopen PowerShell or Command Prompt, then run:
+   ```powershell
+   pdflatex --version
+   ```
+   If you see a version line, you’re set. The first time you compile a resume, MiKTeX may download a few packages (e.g. `fontawesome5`, `glyphtounicode`).
+
+### Option 2: TeX Live
+
+1. **Download**  
+   Go to [tug.org/texlive](https://tug.org/texlive/) → **acquire** → **install-tl-windows** and download the Windows net installer (`install-tl-windows.exe`).
+
+2. **Install**  
+   Run the installer and choose **“Full installation”** (or “medium” if you want a smaller install). The download can take a while.
+
+3. **Verify**  
+   TeX Live adds its `bin` folder to your PATH (e.g. `C:\texlive\2024\bin\windows`). Open a **new** terminal and run:
+   ```powershell
+   pdflatex --version
+   ```
+
+### If `pdflatex` is not found
+
+- **MiKTeX:** Ensure its `bin` folder is on your PATH (e.g. `C:\Users\<You>\AppData\Local\Programs\MiKTeX\miktex\bin\x64`).  
+- Restart Cursor (and any terminal) after installing so it picks up the new PATH.
+
+### Compiling a tailored resume manually
+
+From the job folder:
+
+```powershell
+cd data\jobs\<job-id>
+pdflatex -interaction=nonstopmode tailored_resume.tex
+```
+
+Run it twice if the resume uses references. The agent will do this automatically when a LaTeX toolchain is available and will inspect the PDF to check layout rules.
 
 ## Setup
 
@@ -67,10 +119,10 @@ These answers are saved to `conversation_memory.json` so you won't be asked agai
 ### Step 4: Review and Compile
 
 The agent will generate:
-- `job_posting_extracted.json` - structured data extracted from the PDF
-- `tailored_resume.tex` - your customized resume in LaTeX
+- `job_posting_extracted.json` — structured data extracted from the PDF
+- `tailored_resume.tex` — your customized resume in LaTeX
 
-If you have a LaTeX compiler installed, you can compile the `.tex` file to PDF. Otherwise, the agent will provide the LaTeX code for you to compile manually.
+If a LaTeX distribution is installed (see [LaTeX: dependency and installation](#latex-dependency-and-installation)), the agent can compile the `.tex` file to PDF and inspect the output to validate layout. Otherwise, you can compile manually or use the LaTeX as-is.
 
 ## File Structure
 
