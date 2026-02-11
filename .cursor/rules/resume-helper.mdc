@@ -1,0 +1,245 @@
+---
+description: Automated resume tailoring via Cursor agent using master LaTeX and job PDFs
+globs: |
+  **/*.tex
+  data/jobs/**
+  data/master/**
+alwaysApply: false
+---
+
+## Purpose
+
+This rule file instructs a **Cursor AI agent** to tailor the master LaTeX resume
+to specific job postings **without running any external scripts or executables**.
+All work must be performed through direct file reads/edits (e.g., `ReadFile`,
+`ApplyPatch`, manual JSON updates). The agent should:
+
+- Read PDFs and LaTeX directly.
+- Hand-author the small JSON files needed for structured data and memory.
+- Iterate on LaTeX until layout and highlighting rules are satisfied.
+- Explicitly avoid invoking interpreters, shell commands, or helper binaries—only use
+Cursor-native editing capabilities.
+
+---
+
+## Repository layout and conventions
+
+- **Master resume**
+  - `data/master/master_resume.tex`: single source of truth for your LaTeX resume.
+  - `data/master/master_resume.pdf`: compiled version used as a visual reference.
+  - The master LaTeX must clearly separate:
+    - A **fixed header block** (name + contact).
+    - A **fixed footer block** (university section).
+    - A middle **experience/skills block** that can be changed per job.
+- **Job postings**
+  - Each application lives in its own folder: `data/jobs/<job-id>/`.
+  - Required files:
+    - `job_posting.pdf`: the job description the user downloads.
+  - Generated / agent-managed files (created manually by the agent):
+    - `job_posting_extracted.json`: structured representation of the posting.
+    - `tailored_resume.tex`: job-specific LaTeX resume.
+    - `tailored_resume.pdf`: compiled one-page PDF (if the user requests compilation).
+    - `session_log.json` (optional): trace of decisions and prompts for debugging.
+- **Long-term memory (JSON database under master)**
+  - `data/master/conversation_memory.json`: primary JSON database that helps the
+    agent avoid asking the same questions repeatedly. It should store:
+    - `qa_history`: list of past questions and answers about your background.
+    - `skill_mappings`: mappings from skills → experiences or companies.
+    - Any other small notes that help map job requirements to your history.
+
+When these files or folders do not exist, the agent should **create them manually**
+as needed.
+
+---
+
+## Immutable vs mutable parts of the resume
+
+- **Immutable**
+  - The **header** with your name and contact information.
+  - The **footer** with your university experience / education section.
+  - The agent must **never change** wording, spacing, or order of these blocks.
+  - Implementation detail:
+    - Treat the header and footer as verbatim LaTeX segments copied from
+      `data/master/master_resume.tex`.
+    - If helpful, the user can add clear comment markers such as:
+      - `% === HEADER START ===` / `% === HEADER END ===`
+      - `% === FOOTER START ===` / `% === FOOTER END ===`
+    - The agent should preserve everything between these markers exactly.
+
+- **Mutable**
+  - The **middle experience/skills section** is where the agent can:
+    - Choose which experiences to include.
+    - Reorder experiences.
+    - Add / remove bullet points.
+    - Add `\textbf{...}` around skills relevant to the target job.
+
+---
+
+## High-level workflow for the agent
+
+When the user asks to tailor a resume for a job:
+
+1. **Identify job folder**
+   - Ask the user for the job-id or path (e.g. `data/jobs/deepmind-research-202602/`),
+     or infer from currently open files.
+   - Ensure `job_posting.pdf` exists there. If not, ask the user to add it.
+
+2. **Extract job information to JSON**
+   - Read `job_posting.pdf` (as text).
+   - Create or overwrite `job_posting_extracted.json` in the same folder with:
+     - `id`: job-id or folder name.
+     - `title`, `company`, `location` (best-effort extraction).
+     - `raw_text`: full extracted text.
+     - `sections`: map of section names → text (`responsibilities`, `requirements`, etc.).
+     - `required_skills`: list of normalized skills required.
+     - `nice_to_have_skills`: list of normalized secondary skills.
+     - `keywords`: other useful phrases or domain terms.
+
+3. **Load or initialize JSON database under master**
+   - Use `data/master/conversation_memory.json` as the main database for
+     long-term information about your background.
+   - If it does not exist yet:
+     - Manually create it with fields like:
+       - `version`: integer version number.
+       - `qa_history`: empty list.
+       - `skill_mappings`: empty object.
+   - If you also want to track structured resume entries in JSON, add another key
+     such as `resume_entries` (metadata-only: roles, companies, bullets, skills)
+     into this same file.
+
+4. **Determine relevant skills and experiences**
+   - From `job_posting_extracted.json`, build a set of **target skills and keywords**.
+   - From `knowledge_base.json` (and/or directly from `master_resume.tex`):
+     - Find which experiences, projects, or bullets mention those skills.
+     - Build a ranked list of candidate experiences with:
+       - High overlap in required skills.
+       - High relevance to job responsibilities.
+       - Prefer recent, high-impact roles when available.
+
+5. **Ask targeted questions only when necessary**
+   - Before asking new questions, check `qa_history` in `conversation_memory.json` for
+     similar skills or mappings.
+   - If a job mentions a skill that might be present but is not clearly mapped:
+     - Ask concise, specific questions, for example:
+       - “The posting mentions Kubernetes. Where did you use Kubernetes?
+          Options: [Company A], [Company B], [Another context], [Not used].”
+     - When the user answers:
+       - Update `conversation_memory.json` to record the mapping and the answer in `qa_history`.
+   - Goal: over time, new jobs reuse existing knowledge and require fewer prompts.
+
+6. **Select content for this tailored resume**
+   - Choose a small set of experiences (e.g. 3–5) that best match the target job.
+   - For each chosen experience:
+     - Select the 2–4 most relevant bullet points.
+     - Prefer bullets that:
+       - Mention required or strongly relevant skills.
+       - Demonstrate measurable impact or outcomes.
+       - Are not too long (see layout constraints below).
+
+7. **Generate `tailored_resume.tex`**
+   - Read `data/master/master_resume.tex`.
+   - Copy the header and footer blocks **verbatim**.
+   - Replace the middle experience section with a new LaTeX block that:
+     - Contains only the selected experiences and bullets.
+     - Uses the same macros/environments as the master resume.
+   - **Bold relevant skills**:
+     - For each key skill relevant to this job:
+       - Ensure at least one occurrence in the body is wrapped with `\textbf{...}`.
+       - Avoid double-wrapping text that is already bold.
+     - Prioritize bolding required skills over nice-to-have skills.
+   - Make all edits directly in LaTeX—do not rely on code generation scripts.
+
+8. **Compile to PDF**
+   - Write `tailored_resume.tex` to the job folder.
+   - If a LaTeX toolchain is available:
+     - Use a terminal command (e.g. `pdflatex` or `latexmk`) to compile it into
+       `tailored_resume.pdf`.
+     - Capture and inspect the LaTeX log for warnings:
+       - Overfull/underfull boxes.
+       - Multi-page output.
+   - If compilation tools are not available:
+     - Clearly tell the user and provide the final LaTeX so they can compile manually.
+
+9. **Validate layout and rules**
+   The agent must check (best-effort, heuristically if necessary) that:
+
+   1. **Exactly one page**
+      - The compiled PDF should have **exactly one page**.
+      - If tools exist to check page count, use them.
+      - Otherwise, ensure the LaTeX document class and geometry match the master
+        resume and watch for any “page 2” content or warnings.
+
+   2. **Bullet length rules**
+      - Bullet points should **aim** to fit on a single line.
+      - It is acceptable for some bullets to run onto a second line **if needed**,
+        but avoid bullets that are just barely over one line (e.g., “1.1 lines”).
+      - Heuristic approach:
+        - Use character/word count as a proxy:
+          - Short, punchy bullets (e.g. under ~120–150 characters) are preferred.
+          - If a bullet is very long (e.g. > ~200 characters), consider:
+            - Splitting into two bullets, or
+            - Removing low-signal phrases.
+
+   3. **Bolded relevant skills**
+      - For the set of **required skills** from the job posting:
+        - Confirm that each appears bolded at least once in the LaTeX body
+          (not just in a skills list, ideally in bullets or role descriptions).
+
+10. **Adjustment loop**
+    - If any of the above rules are violated:
+      - Modify only the **mutable** middle section of `tailored_resume.tex`.
+      - Reasonable adjustments include:
+        - Removing the **least relevant** bullet or experience.
+        - Tightening overly long bullets by:
+          - Dropping redundant qualifiers.
+          - Moving secondary details to another bullet.
+        - Adding/removing bold markers for skills.
+      - Recompile and re-check constraints.
+      - Limit this loop to a reasonable number of iterations (e.g. up to 5).
+    - If the agent cannot satisfy constraints automatically:
+      - Explain clearly what is failing (e.g., “this bullet remains too long”,
+        “second page still appears”), and
+      - Propose specific edits for the user to accept or tweak.
+
+---
+
+## How the user should interact
+
+Typical workflow for the user:
+
+1. Place or update your master resume:
+   - Put `master_resume.tex` (and optionally `master_resume.pdf`)
+     under `data/master/`.
+
+2. For each job:
+   - Create a folder like `data/jobs/openai-research-202602/`.
+   - Save the job posting as `job_posting.pdf` in that folder.
+
+3. In Cursor, say something like:
+   - “Tailor my resume for `data/jobs/openai-research-202602/job_posting.pdf`.”
+
+4. The agent should then:
+   - Follow the workflow in this rule file.
+   - Ask you a small number of targeted questions only when necessary.
+   - Produce `tailored_resume.tex` and ideally `tailored_resume.pdf`.
+   - Summarize what it changed:
+     - Which experiences were included.
+     - Which skills were emphasized/bolded.
+     - Any trade-offs or bullets it dropped due to space.
+
+---
+
+## Agent behavior guidelines
+
+- Prefer **editing existing files** (`.tex`, `.json`) over rewriting from scratch,
+  to keep diffs small and understandable.
+- When updating JSON files:
+  - Ensure they remain valid JSON.
+  - Preserve existing information and extend it rather than discarding history.
+- Be explicit in comments in LaTeX when marking boundaries or decisions, e.g.:
+  - `% Selected for OpenAI research engineer role – focus on ML and infra`
+- Always keep in mind the three core constraints:
+  1. Exactly one page.
+  2. No barely-over-one-line bullets where it can be avoided.
+  3. Relevant skills from the job posting are clearly bolded.
+

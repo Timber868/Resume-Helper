@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "notes": "Long-term Q&A and mappings so the agent can avoid asking repeat questions about your background.",
+  "qa_history": [
+    {
+      "id": "example-skill-mapping",
+      "question": "Have you used Kubernetes in a professional project?",
+      "answer": "Yes, at Company X where I deployed services on a GKE cluster.",
+      "skills": ["kubernetes"],
+      "experience_refs": [
+        {
+          "company": "Company X",
+          "role": "Software Engineer",
+          "hint": "Kubernetes, GKE, microservices"
+        }
+      ],
+      "timestamp": "2026-02-11T00:00:00Z"
+    },
+    {
+      "id": "react-typescript-roomieranks",
+      "question": "Which experiences demonstrate your React/TypeScript (or similar modern frontend) work?",
+      "answer": "RoomieRanks (Vue.js + TypeScript + Golang/API work) and the ECSE 321 video game store project (Vue.js frontend tied to Spring Boot/Java/PostgreSQL). I contributed across frontend pages, REST endpoints, services, and repos.",
+      "skills": [
+        "react",
+        "typescript",
+        "vue.js",
+        "spring boot",
+        "rest api"
+      ],
+      "experience_refs": [
+        {
+          "company": "RoomieRanks",
+          "role": "Full-Stack Developer",
+          "hint": "Vue.js + TypeScript frontend, Golang REST APIs, MySQL schema design"
+        },
+        {
+          "company": "McGill ECSE 321 course project",
+          "role": "Full-stack team member",
+          "hint": "Spring Boot + Java backend with Vue.js frontend for a video game store"
+        }
+      ],
+      "timestamp": "2026-02-11T00:15:00Z"
+    }
+  ],
+  "skill_mappings": {
+    "kubernetes": [
+      {
+        "company": "Company X",
+        "role": "Software Engineer",
+        "notes": "Managed workloads on Kubernetes (GKE) and wrote Helm charts."
+      }
+    ],
+    "react": [
+      {
+        "company": "RoomieRanks",
+        "role": "Full-Stack Developer",
+        "notes": "Built Vue.js (React-adjacent) frontend with TypeScript and collaborated on Golang APIs."
+      },
+      {
+        "company": "McGill ECSE 321 course project",
+        "role": "Full-stack team member",
+        "notes": "Implemented Vue.js frontend pages and integrated with Spring Boot REST services."
+      }
+    ],
+    "typescript": [
+      {
+        "company": "RoomieRanks",
+        "role": "Full-Stack Developer",
+        "notes": "TypeScript-based Vue components plus GitHub collaboration across the stack."
+      }
+    ],
+    "vue.js": [
+      {
+        "company": "RoomieRanks",
+        "role": "Full-Stack Developer",
+        "notes": "Led Vue.js frontend work, games page UX, and TypeScript component logic."
+      },
+      {
+        "company": "McGill ECSE 321 course project",
+        "role": "Full-stack team member",
+        "notes": "Co-built the Vue.js storefront tied to Spring Boot services and PostgreSQL."
+      }
+    ]
+  }
+}
+
