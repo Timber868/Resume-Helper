@@ -46,7 +46,7 @@ the narrative, do not just fill in blanks.
   - Generated / agent-managed files (created manually by the agent):
     - `job_posting_extracted.json`: structured representation of the posting.
     - `tailored_resume.tex`: job-specific LaTeX resume.
-    - `tailored_resume.pdf`: compiled one-page PDF (if the user requests compilation).
+    - `tailored_resume.pdf`: compiled one-page PDF (agent must compile when a LaTeX toolchain is available; see "Compile and check PDF").
     - `session_log.json` (optional): trace of decisions and prompts for debugging.
 - **Long-term memory (JSON database under master)**
   - `data/master/conversation_memory.json`: primary JSON database that helps the
@@ -80,6 +80,10 @@ as needed.
     - Reorder experiences.
     - Add / remove bullet points.
     - Add `\textbf{...}` around skills relevant to the target job.
+  - When rewriting bullets, **preserve the master's style:** similar verb choice, density, and level of technical specificity; do not introduce overly polished "marketing" tone.
+  - **Layout cannot change:** Section order, which sections exist (e.g. Education, Work Experience, Projects, Technical Skills), and org structure must stay the same. Do not remove or reorder whole sections.
+  - **Skills section:** The **layout** of the skills section (its position, one block) cannot change. **Preserve the same number of skill categories/lines** as in the master resume (e.g. if the master has 5 lines such as Languages, Frameworks, Cloud \& DevOps, Databases, Developer Workflow, the tailored resume must have the same number of lines/categories). You may rephrase category names and which skills appear under each to match the job; do **not** reduce the number of categories (e.g. do not collapse 5 sections into 3). When trimming for space, get space by adding or removing content elsewhere—not by merging or removing skill lines.
+  - **Work experience (internship) bullets must not be minimized:** Work experience is the most valuable part of the resume. **Do not reduce the number of bullet points** in the work experience section. When space or layout fixes are needed, get space from elsewhere first: (1) trimming or shortening **project** bullets (or dropping the least relevant project); (2) condensing the **skills section** wording or line count; (3) tightening **non–work experience** bullets (e.g. coursework, extracurriculars). Only in extreme space need may you **shorten the wording** of a work experience bullet—**never** remove a work experience bullet to save space.
 
 ---
 
@@ -132,10 +136,99 @@ as needed.
     orgs or reordering within an org.
   - Before writing LaTeX, explicitly list which experiences belong to which
     org from the master and ensure the tailored resume respects that mapping.
+- **Section title styling (no overlap)**  
+  The horizontal rule under section titles must **not** overlap the first entry
+  under that section. Ensure sufficient vertical space after the section rule:
+  in `\titleformat{\section}`, use a less aggressive negative `\vspace` after
+  `\titlerule` (e.g. `\vspace{-5pt}` instead of `\vspace{-17pt}`) so the rule
+  does not cut through the first project or role. When compiling, **inspect the
+  PDF** for this overlap and fix the section format in the preamble if needed.
+- **Gap between section headers and content (5–10 pt max)**  
+  The vertical space between a section heading (and its rule) and the first
+  line of content below (e.g. Education → McGill University) must be **between
+  5 pt and 10 pt**. Use e.g. `\vspace{6pt}` after `\section{...}`; avoid
+  `\vspace{15pt}` or larger. When compiling, **inspect the PDF** and fix any
+  section that has an oversized gap.
+- **No overlap: section headings must clear previous text**  
+  Section headings (e.g. **Projects**, **Education**) must **never** merge with
+  or overlap the last line of the previous block. **Critical:** When a section
+  (especially **Education**) immediately follows `\resumeSubHeadingListEnd`
+  (which closes an itemize), ensure sufficient space before the section heading.
+  **Do not** use negative `\vspace` (e.g. `\vspace{-3pt}` or more) before
+  `\section{Education}` or any section that follows a closing list—it will pull
+  the heading up into the previous text and cause overlap. **Fix:** Use
+  `\titlespacing*{\section}{0pt}{10pt}{0pt}` (10pt before sections) and ensure
+  `\resumeSubHeadingListEnd` adds a small positive vspace (e.g. `\vspace{2pt}`)
+  after closing the list. When compiling, **inspect the PDF** and confirm every
+  section heading has clear vertical separation from the content above; if headings
+  overlap the previous text, increase the `before-sep` in `\titlespacing*` or add
+  positive vspace after `\resumeSubHeadingListEnd`.
+- **Bullet style: dotted, not straight**  
+  List items (experience and project bullets) must use **dotted** bullet symbols
+  (•), not straight dashes, hyphens, or lines. When generating `tailored_resume.tex`,
+  the preamble **must** include the same itemize label redefinitions as the master
+  resume so bullets render as dots. Copy from the master verbatim:
+  `\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}` and
+  `\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}` (or the exact
+  equivalent used in the master). Do not omit these lines; without them, LaTeX
+  may use the default document-class bullet (often a dash), producing "straight"
+  instead of dotted bullets. When inspecting the PDF, verify that bullet points
+  appear as dots (•); if they appear as lines or dashes, add or fix the
+  `\labelitemi` / `\labelitemii` redefinitions in the tailored `.tex` preamble
+  and recompile.
+- **Maximum 4 bullet points per entry**  
+  No job or experience entry may have more than 4 bullet points. If the master
+  or selected content has more than 4 bullets for one role/project, **remove**
+  the least relevant until at most 4 remain (for work experience prefer impact;
+  for projects remove bullets, do not merge multiple bullets into one).
+- **Target: just under one page (page fill)**  
+  The tailored resume must **use the page fully**—aim for content that reaches
+  **just under one page** (e.g. ~90–98% of the page used), not 70% or less.
+  - **How to fit one page:** To fit under one page, **add or remove content**
+    (e.g. include or drop a project, add or remove bullet points, include or
+    drop an experience). Do **not** condense by turning multiple bullet points
+    into single long lines, merging bullets into one, or reducing the number
+    of Technical Skills categories. Keep bullets as **distinct points**; keep
+    the same number of skill lines as in the master.
+  - **When generating:** Prefer including **more** relevant experiences and
+    bullets (e.g. 4–6 projects/roles, 3–4 bullets per entry where relevant)
+    so the first draft is dense. Trim only **after** compiling if the result
+    spills to a second page—by **removing** a project or **removing** bullets,
+    not by merging bullets or skill lines.
+  - **When inspecting the PDF:** If the last substantial content (e.g. Education
+    or the final project) leaves a **large blank band** at the bottom (roughly
+    the bottom 20–30% of the page empty), treat this as a failure: the resume
+    is **too short**. Add content (restore another project, add bullets to
+    existing entries, or add a skill line) and recompile until the page is
+    nearly full but still one page.
+  - **Do not** over-trim to "play it safe." The goal is one full page of
+    strong, relevant content—not a half-filled page.
+
+---
+
+## Skill bolding and skill list sync
+
+- **Bold JD-relevant skills only in bullet points**  
+  Bold skills that correspond to the job description **only in the bullet-point
+  text**. Do **not** bold skills in the Technical Skills section or in the
+  italic tech stack next to job/project titles. This keeps emphasis where
+  readers see concrete evidence (the bullets).
+- **Sync skills from bullets to lists**  
+  If a skill is mentioned in a bullet (e.g. Linux, React), add it to (1) the
+  **Technical Skills** section and (2) the **italic tech list** next to that
+  position or project name, if not already present. This keeps the resume
+  consistent and ATS-friendly.
 
 ---
 
 ## Bullet point engineering: RCC and orphan control
+
+- **Bullets must stay as distinct points:** Each bullet must remain a **separate**
+  bullet point (a single `\resumeItem{...}`). Do **not** merge two or more
+  bullets into one long line or paragraph. Do not turn "point-style" bullets
+  into "line-style" run-on text. To save space, **remove** entire bullets or
+  **remove** an entire project/entry; do not merge bullet content into fewer
+  items.
 
 **Rendered Character Count (RCC)** is used as a proxy for line length when the
 rendered PDF is not visible:
@@ -147,9 +240,42 @@ rendered PDF is not visible:
   190**. That range tends to produce a single orphan word or short fragment on the
   next line. Either keep bullets under ~100 RCC (short, one line) or clearly over
   ~190 (comfortably two lines).
+- **Spillover:** Avoid bullets or lines that **barely** wrap (e.g. one or two
+  words on the next line), wasting a full line of vertical space. Shorten or
+  rephrase so content fits tightly; the PDF check must catch and fix such
+  spillover.
 - **Reframing:** Rephrase tasks to match JD keywords and responsibilities while
   preserving truth. Prioritize bullets that demonstrate impact and relevance to
   the role.
+
+---
+
+## Bullet voice and anti-AI heuristics
+
+Mirror the master's bullet voice exactly:
+
+- **Structure:** Prefer strong past-tense verbs + specific object + how + impact.
+- **Avoid generic scaffolding phrases:** Do not use: "to enable," "to ensure," "seamless," "robust," "leveraged," "utilized," "various," "significant," "multiple."
+- **Concrete "texture" requirement (hard constraint):** Each bullet must include at least one of:
+  - a named artifact (service name, tool, protocol, test type, dataset, metric, file type, interface), or
+  - a number (count, \%, latency, size, services, users, frames), or
+  - a failure mode / constraint (timeout, race, drift, false positives, rate limits, hardware constraint).
+  If none are available, rewrite until one is present.
+- **No repetition rule (hard constraint):**
+  - Within a single role/project, do not reuse the same core action twice (e.g., "improved diagnostics" / "automated diagnostics").
+  - If two bullets overlap, merge them by keeping the more impactful one and replacing the other with a different dimension: performance, reliability, testing, tooling, integration, deployment, debugging.
+  - Ban near-duplicate openings (e.g., "Developed… Implemented… Built…" repeated 3+ times).
+- **Vary sentence structure (master-template alignment):**
+  - Max 2 bullets in a row starting with the same verb.
+  - Use one bullet per entry that starts with an outcome/impact phrase when appropriate (e.g., "Cut CI failures by … by …").
+- **Specificity over keyword stuffing:**
+  - Job keywords must appear, but only if backed by evidence in the bullet.
+  - Never introduce a tool/framework not present in the repo memory or master resume content.
+- **Human phrasing pass (mandatory):** After drafting bullets, do a final pass to:
+  - remove filler adjectives,
+  - shorten clauses,
+  - replace abstract nouns ("integration validation") with direct nouns ("staging deploy smoke tests"),
+  - ensure each bullet reads like something a person would say in one breath.
 
 ---
 
@@ -213,17 +339,23 @@ reuse that and ask only when something is ambiguous or unmapped.
    - Goal: over time, new jobs reuse existing knowledge and require fewer prompts.
 
 6. **Select content for this tailored resume**
-   - Choose a small set of experiences (e.g. 3–5) that best match the target job.
+   - **Target a nearly full page:** Choose enough experiences so the resume
+     fills **just under one page** (aim for ~90–98% page use). Prefer 4–6
+     roles/projects and 3–4 bullets per entry where relevant; do not
+     under-include to "play it safe."
    - For each chosen experience:
-     - Select the 2–4 most relevant bullet points.
+     - Select the 2–4 most relevant bullet points (use 3–4 when the role is
+       strong for the JD).
      - Prefer bullets that:
        - Mention required or strongly relevant skills.
        - Demonstrate measurable impact or outcomes.
        - Are not too long (see layout constraints below).
+   - If in doubt, include one more project or one more bullet per entry; trim
+     only after the first compile if the PDF spills to two pages.
 
 7. **Generate `tailored_resume.tex`**
-   - Read `data/master/master_resume.tex`.
-   - Copy the header and footer blocks **verbatim**.
+   - Read `data/master/master_resume.tex` (or the actual master file, e.g. `main.tex`, if that is the source of truth).
+   - Copy the **preamble** from the master (including all custom commands and, critically, the bullet style: `\renewcommand\labelitemi{...}` and `\renewcommand\labelitemii{...}` so that bullets render as **dotted** (•), not straight). Copy the header and footer blocks **verbatim**.
    - Replace the middle experience section with a new LaTeX block that:
      - Contains only the selected experiences and bullets.
      - Uses the same macros/environments as the master resume.
@@ -236,11 +368,13 @@ reuse that and ask only when something is ambiguous or unmapped.
        used); do not mix roles from
        one org under another org’s header, and keep the same order of roles
        within each org as in the master.
-   - **Bold relevant skills**:
-     - For each key skill relevant to this job:
-       - Ensure at least one occurrence in the body is wrapped with `\textbf{...}`.
-       - Avoid double-wrapping text that is already bold.
-     - Prioritize bolding required skills over nice-to-have skills.
+   - **Bold relevant skills (in bullet points only)**:
+     - For each key skill relevant to this job, ensure at least one occurrence
+       in **bullet-point text** is wrapped with `\textbf{...}`. Do **not** bold
+       skills in the Technical Skills section or in the italic tech stack next
+       to job/project titles.
+     - Avoid double-wrapping text that is already bold. Prioritize required
+       skills over nice-to-have skills.
    - **LaTeX technical constraints:**
      - Clean code: no internal artifacts or citations; use standard `\item` and
        the same structure as the master resume.
@@ -250,8 +384,8 @@ reuse that and ask only when something is ambiguous or unmapped.
      commentary inside the file). Make all edits directly in LaTeX—do not rely
      on code generation scripts.
 
-8. **Compile to PDF**
-   - Write `tailored_resume.tex` to the job folder.
+8. **Compile to PDF (mandatory — do not skip)**
+   - After writing or editing `tailored_resume.tex`, **always** run the LaTeX compiler when a toolchain is available.
    - **Always attempt to compile** when a LaTeX toolchain is available (e.g.
      `pdflatex` or `latexmk` in PATH). Run the compiler from the job folder or from
      the directory that provides required inputs (e.g. `data/master` if the resume
@@ -265,7 +399,7 @@ reuse that and ask only when something is ambiguous or unmapped.
      will validate rules once `tailored_resume.pdf` is present (e.g. after the user
      compiles and re-runs the tailoring request).
 
-9. **Inspect the PDF and validate rules**
+9. **Inspect the PDF and validate rules (mandatory after every compile)**
    After compilation, the agent **must inspect the generated PDF** (when the file
    exists and is readable) to confirm the rules are respected. Use the PDF as the
    source of truth for layout, not only the LaTeX source.
@@ -273,16 +407,21 @@ reuse that and ask only when something is ambiguous or unmapped.
    - **Inspect the PDF output**
      - Open or read `tailored_resume.pdf` (e.g. via Read or a PDF-capable tool) so
        that the rendered output can be checked.
-     - Verify **exactly one page**: no content on a second page.
-     - Verify **organization structure**: each org heading in the PDF is followed
+    - Verify **exactly one page**: no content on a second page.
+    - Verify **page fill (just under one page)**: Content should use most of the page (roughly 85–98%). If there is a large blank band at the bottom, the resume is too short—add content and recompile until nearly full.
+    - Verify **organization structure**: each org heading in the PDF is followed
        only by the roles/projects that belong to that org in the master; no mixing
        (e.g. “McGill Engineering Games” must not be followed by “McGill Formula
        Electric Website” if that project belongs under “McGill Computer Science
        Games” in the master).
      - Check **order within each org**: under each heading, roles appear in the
        same order as in the master resume.
-     - Look for **orphans and layout**: single words or short fragments alone on
-       a line at the end of a bullet (RCC danger zone); severe overfull lines.
+    - Look for **orphans and layout**: single words or short fragments alone on
+      a line at the end of a bullet (RCC danger zone); severe overfull lines.
+    - Check for **spillover**: lines or bullets that barely wrap; tighten or rephrase so vertical space is used efficiently.
+    - **Check styling and spacing:** Section headings must not overlap previous text; rule under section titles must not cut through first entry; gaps 5–10 pt. Fix in `.tex` preamble or section macros if needed, then recompile.
+    - Verify **dotted bullets**: list items show dotted symbols (•), not straight dashes; if straight, add or fix `\labelitemi` / `\labelitemii` in preamble and recompile.
+   - **Checklist:** Exactly one page; page fill ~85–98%; org headings only when multiple; no mixing; no orphans/spillover; bold in bullet text only; max 4 bullets per entry; dotted bullets; styling correct. **When a check fails:** apply fixes (remove content, fix preamble), recompile, re-inspect; do not stop until PDF is correct.
 
    - **Cross-check with LaTeX and heuristics when PDF is not inspectable**
      If the PDF cannot be read (e.g. binary only, no viewer):
@@ -301,25 +440,42 @@ reuse that and ask only when something is ambiguous or unmapped.
      4. **Bullet length / orphans** — no obvious “1.1 line” bullets or single-word
         orphans; RCC danger zone (100–190) avoided in source.
      5. **Bolded relevant skills** — required job-posting skills appear bolded at
-        least once in the body (not only in the skills list).
+        least once in **bullet-point text only** (not in the Technical Skills
+        section or in the tech stack next to titles).
+     6. **Dotted bullets** — list items show dotted bullet symbols (•); preamble
+        includes `\labelitemi` / `\labelitemii` from master; if PDF shows straight
+        bullets, add or fix these and recompile.
+     7. **Max 4 bullets per entry** — no role or project has more than 4 bullets.
+     8. **Styling and spacing** — no overlapping headings, rules cutting through
+        content, or uneven gaps; fix in LaTeX and recompile if needed.
 
-10. **Adjustment loop**
-    - If inspection (step 9) finds any rule violated:
-      - Modify only the **mutable** middle section of `tailored_resume.tex`.
-      - Reasonable adjustments include:
-        - Removing the **least relevant** bullet or experience.
-        - Tightening overly long bullets by:
-          - Dropping redundant qualifiers.
-          - Moving secondary details to another bullet.
-        - Adding/removing bold markers for skills.
-        - Fixing org–experience mapping or order so the PDF matches the master.
-      - **Recompile** (step 8) and **re-inspect the PDF** (step 9) to confirm the
-        violation is fixed before considering the tailoring complete.
-      - Limit this loop to a reasonable number of iterations (e.g. up to 5).
+10. **Adjustment loop (apply fixes when checks fail)**
+    - If inspection (step 9) finds any rule violated, the agent **must** apply
+      the relevant fixes—do not report failure and stop. Modify only the
+      **mutable** middle section of `tailored_resume.tex`, then recompile and
+      re-inspect until all checks pass.
+    - **When the resume is too short (large blank band at bottom):** Add content
+      (restore another project, add bullets, or expand skills); recompile; do not leave ~70% page use.
+    - **Priority when trimming:** First: **Remove** project bullets or **drop** the least relevant project; do not merge bullets. Second: Shorten wording in skills section if needed; **do not** reduce the number of skill categories/lines. Third: Remove whole non–work experience bullets. **Work experience:** Do **not** remove or reduce the number of work experience bullets; only in extreme need shorten wording—never remove a bullet.
+    - **Spillover fixes:** Shorten or rephrase bullets that barely spill to an extra line.
+    - **Styling/spacing fixes:** Adjust preamble or macros if headings overlap or rules cut through content; recompile and re-inspect.
+    - Reasonable adjustments also include: adding/removing bold markers; fixing org–experience mapping or order.
+    - **Recompile** (step 8) and **re-inspect the PDF** (step 9) after every edit until the violation is fixed. Limit to a reasonable number of iterations (e.g. up to 5).
     - If the agent cannot satisfy constraints automatically:
       - Explain clearly what is failing (e.g., “this bullet remains too long”,
         “second page still appears”, “Formula Electric still under wrong heading”), and
       - Propose specific edits for the user to accept or tweak.
+
+---
+
+## Compile and check PDF — mandatory every time
+
+Whenever you create or edit `tailored_resume.tex` for a job:
+
+1. **Compile** — Run the LaTeX compiler from the job folder (e.g. `pdflatex tailored_resume.tex`). On Windows PowerShell use `;` to chain commands if needed. Confirm exit code 0 and that `tailored_resume.pdf` was updated.
+2. **Check page count** — Verify the PDF is exactly one page. If 2+ pages, trim content (remove project or bullets) and recompile until one page.
+3. **Inspect the PDF** — Confirm one page, page fill (just under one page—no large blank band at bottom), correct org structure, no mixing across org headers, no obvious orphans or spillover, **dotted bullets** (•), and correct styling and spacing. If anything does not look right, fix it in the `.tex` (preamble or section macros), then recompile and re-check.
+4. **After adjustments** — Any edit to the mutable section requires **recompile then re-check**. Do not report "tailoring complete" until the latest `.tex` has been compiled and the PDF verified.
 
 ---
 
@@ -361,14 +517,36 @@ Typical workflow for the user:
   - Preserve existing information and extend it rather than discarding history.
 - Be explicit in comments in LaTeX when marking boundaries or decisions, e.g.:
   - `% Selected for OpenAI research engineer role – focus on ML and infra`
+- **When a check fails, apply fixes:** Do not stop at reporting; apply the
+  relevant changes, then recompile and re-check until all checks pass. Prefer
+  **removing** whole project bullets or **dropping** a project to fit one page;
+  do **not** merge bullets into fewer lines or reduce the number of Technical
+  Skills categories. Do not reduce the number of work experience bullets.
 - Always keep in mind the core constraints:
   1. Exactly one page (exceeding it is failure).
-  2. Org headings only when multiple sub-sections: use `\resumeOrgHeading{...}` only
+  2. Page fill: aim for **just under one page** (~85–98%); if too short, add content and recompile.
+  3. Org headings only when multiple sub-sections: use `\resumeOrgHeading{...}` only
      when there are multiple roles/projects from that org; omit for single items.
-  3. No bullets in the RCC danger zone (100–190); prefer short or clearly multi-line.
-  4. Relevant skills from the job posting are clearly bolded.
-  5. Clean LaTeX: escape `\&`, `\%`, `\$`; no internal artifacts.
-  6. No mixing across org headers: when org headings are used, each experience stays
+  4. No bullets in the RCC danger zone (100–190); prefer short or clearly multi-line.
+  5. No wasteful spillover: tighten lines that barely wrap.
+  5a. **Bullets stay as points:** Do not merge multiple bullets into single
+      lines; keep each bullet a distinct point. To fit one page, add or remove
+      content (projects, bullets), not merge bullets or skill categories.
+  5b. **Technical Skills:** Preserve the same number of skill categories/lines
+      as in the master; do not collapse (e.g. 5 lines into 3).
+  6. Relevant skills from the job posting are bolded **in bullet points only** (not
+     in the Technical Skills section or in the tech stack next to titles). Skills
+     mentioned in bullets are added to the skills section and to the position's
+     tech list if missing.
+  7. Clean LaTeX: escape `\&`, `\%`, `\$`; no internal artifacts.
+  8. No mixing across org headers: when org headings are used, each experience stays
      under the same `\resumeOrgHeading{...}` as in the master, with the same order
      within that org.
+  9. Section title rule must not overlap the first entry; max 4 bullets per entry.
+  9a. **Dotted bullets:** The preamble must define dotted bullet style
+      (`\renewcommand\labelitemi{...}` and `\labelitemii` as in the master);
+      list items must render as • not —.
+  10. Layout is fixed; work experience bullet **count** must not be reduced (get
+     space from projects, skills section, or other sections; only in extreme
+     need shorten wording of a work experience bullet—never remove one).
 
