@@ -1,0 +1,82 @@
+---
+description: Tailor cover letters using the master cover.tex form (letter class, header, body, closer)
+globs: |
+  **/cover*.tex
+  data/master/cover_letter/**
+  data/jobs/**/tailored_cover.tex
+  data/jobs/**/cover_body*
+alwaysApply: false
+---
+
+# Cover letter tailoring
+
+When the user asks for a **tailored cover letter** for a job (or to create/update cover letters), always use the **form and structure** of the master template:
+
+**Master template:** `data/master/cover_letter/cover.tex`
+
+## Required form (match cover.tex)
+
+1. **Document class and preamble**
+   - `\documentclass[12pt]{letter}`
+   - Same packages as in `cover.tex`: `inputenc`, `fullpage`, `hyperref`, `graphicx`, `fontawesome5`, `eso-pic`, `charter`
+   - Same layout (topmargin, textheight, `gr` color for header)
+
+2. **Personal and recipient info**
+   - `\input{../../master/cover_letter/info}` from the job folder (or equivalent path from `data/jobs/<job-id>/`), then override job-specific macros:
+   - `\recipient` (e.g. “Canadian Space Agency Hiring Team”)
+   - `\company` if needed
+   - Do not change `\myname`, `\myemail`, `\myphone`, `\mylinkedin`, `\mytitle`, `\greeting`, `\closer` unless the user asks.
+
+3. **Header**
+   - Shaded banner: `\AddToShipoutPictureBG` with `\color{gr}` and the rule as in `cover.tex`
+   - Centered block: `\myname` (large, small caps), then email, LinkedIn, phone with `\faEnvelope`, `\faLinkedinIn`, `\faPhone` and `\href`
+
+4. **Opening block**
+   - Date (e.g. current application date)
+   - `\greeting\ \recipient,` in the same font size block (e.g. 14pt)
+
+5. **Body**
+   - `\setlength\parindent{24pt}` and `\fontsize{11pt}{18pt}\selectfont`
+   - Tailored paragraphs for the specific job (role, company, fit, experience, closing sentence)
+   - Mirror tone and structure of `data/master/cover_letter/body.txt`: opening line (application + role + dates), fit with your background, experience evidence (concrete examples), what you bring, languages/bilingual if relevant
+   - Cross-check the job description (or `data/jobs/<job-id>/job_posting_extracted.json`): use wording that matches the posting’s requirements and assets without over-claiming (see “Accuracy and fit to the job posting” below).
+
+## Voice and style (human-written)
+
+Cover letter body text must **sound human-written** and match the writing style of `data/master/cover_letter/body.txt`:
+
+- **Match body.txt style:** Direct first person (“I am submitting”, “I have”, “I would bring”). Short to medium sentences. Concrete details (dates, tools, numbers) without sounding like a list. Natural transitions (“Thanks to these experiences”, “Finally,”).
+- **Avoid AI tell-tale signs:** Do **not** use em dashes (—). Use commas, “and”, or new sentences instead. Avoid: “leveraged”, “utilized”, “seamless”, “robust”, “delve”, “passionate about”, “excited to”, long chains of adjectives, or stiff/overly formal phrasing. Prefer plain, clear wording.
+- **Human pass:** Before finalizing, read the body aloud (or in your head) and fix any phrase that sounds generic, padded, or like typical AI prose. Prefer the same level of warmth and specificity as in body.txt.
+
+## Accuracy and fit to the job posting
+
+Tailor claims and wording so the letter matches the posting **without over-claiming**. Use the job description (or `job_posting_extracted.json` in the job folder) as the source of truth.
+
+- **Align with core requirements, but do not overstate:** If the posting asks for experience with AI/ML models *trained* on images/videos (e.g. for artifact detection), and the candidate has **not** trained or fine-tuned such a model, **do not** say their experience “aligns with models trained on images and videos.” Use safer wording instead, e.g. “building image and video pipelines in Python and integrating computer-vision inference into applications aligns closely with the role’s focus on deploying ML for image- and video-based detection.” Only use “trained” or “fine-tuned” if the resume or user confirms it.
+- **Only claim what is backed by the resume:** Every concrete skill, library, or outcome (e.g. TensorFlow, PyTorch, OpenCV, precision/recall, labeled data) must appear in the master resume or be confirmed by the user. If the posting cites specific libraries (e.g. TensorFlow, PyTorch, OpenCV), **name only those the candidate has actually used**; do not add libraries that are not on the resume.
+- **If the candidate did train or evaluate a model:** Add at most one clear sentence with a measurable detail (e.g. evaluated on labeled clips, tuned thresholds to reduce false positives). Include this **only if** the resume or user confirms it.
+- **Map to “assets” when helpful:** When the posting lists assets (e.g. Linux, satellite/space imagery, quality control, specific location or labs), add a short forward-looking sentence that expresses interest in applying the candidate’s skills to those areas or working in that environment, **without inventing experience** (e.g. “I’m particularly interested in applying these techniques to space imagery and quality-control style detection, and I look forward to the opportunity to work in [specific labs/location].”). Prefer “look forward to” over “excited by” to stay within voice rules.
+- **Keep sentences readable:** Avoid one long sentence with multiple semicolons or many clauses. Split into two shorter sentences when it improves clarity (e.g. separate “During my co-op at X I did A; in an earlier role I did B” into two sentences).
+
+6. **Closing**
+   - Separate line: “Thank you for your time and consideration.” in the same 11pt font
+   - `\vfill` then right-aligned: `\closer,` then `\myname` and `\mytitle`
+
+## Where to put job-specific files
+
+- **Per-job folder:** `data/jobs/<job-id>/`
+- **Tailored cover letter:** `data/jobs/<job-id>/tailored_cover.tex`
+  - Self-contained or `\input{../../master/cover_letter/info}` and optional `\input{cover_body}` for body text.
+- **Optional body-only file:** `data/jobs/<job-id>/cover_body.tex` (or `.txt`) if you prefer to keep body text in a separate file; then in `tailored_cover.tex` use `\input{cover_body}` instead of inlining the body.
+
+## Compilation
+
+- Run `pdflatex tailored_cover.tex` from `data/jobs/<job-id>/` so that `\input{../../master/cover_letter/info}` resolves.
+- Output: `tailored_cover.pdf` in the same job folder.
+
+## Summary
+
+- **Always** use the same structure as `data/master/cover_letter/cover.tex`: letter class, shaded header, date + greeting + recipient, body, thank-you line, signature block.
+- **Always** produce (or edit) a single main file in the form of `cover.tex` (e.g. `tailored_cover.tex`) per job; body may be inlined or in `cover_body.tex`/`cover_body.txt`.
+- **Always** match the posting’s requirements and assets without over-claiming: use “Accuracy and fit to the job posting” so claims (e.g. trained models, libraries) are resume-backed and wording aligns with the JD.

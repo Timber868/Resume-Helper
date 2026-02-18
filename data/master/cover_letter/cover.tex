@@ -1,0 +1,68 @@
+% Project:  TeX Cover Letter Template
+% Author:   Sid Lacy
+
+% EDIT info.tex, body.tex
+
+\documentclass[12pt]{letter}
+\usepackage[utf8]{inputenc}
+\usepackage[empty]{fullpage}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage{fontawesome5}
+\usepackage{eso-pic}
+\usepackage{charter}
+
+\addtolength{\topmargin}{-0.5in}
+\addtolength{\textheight}{1in}
+\definecolor{gr}{RGB}{225,225,225}
+
+\input{info}
+
+\begin{document}
+
+% Shaded header banner
+\AddToShipoutPictureBG{%
+\color{gr}
+\AtPageUpperLeft{\rule[-1.3in]{\paperwidth}{1.3in}}
+}
+
+% Header
+\begin{center}
+{\fontsize{28}{0}\selectfont\scshape \myname}
+
+\href{mailto:\myemail}{\faEnvelope\enspace \myemail}\hfill
+\href{https://linkedin.com/in/\mylinkedin}{\faLinkedinIn\enspace linkedin.com/in/\mylinkedin}\hfill
+\href{tel:\myphone}{\faPhone\enspace \myphone}\hfill
+\end{center}
+
+\vspace{0.2in}
+
+% Opening block
+{\fontsize{14pt}{18pt}\selectfont
+February 7, 2026 \par % Use \par to end the paragraph here
+
+\greeting\ \recipient,
+\par} % Use \par again to close the paragraph with the applied font size
+\vspace{0.1in}
+% Body
+\vspace{-0.1in}\setlength\parindent{24pt}
+{\fontsize{11pt}{18pt}\selectfont % Sets the font size to 14pt and the line spacing to 18pt
+\noindent\input{body}
+}
+
+{\fontsize{11pt}{18pt}\selectfont % Sets the font size to 14pt and the line spacing to 18pt
+\noindent Thank you for your time and consideration.}
+
+% Closer
+\vspace{0.1in}
+\vfill
+
+\begin{flushright}
+\closer,
+
+
+\myname\\
+\mytitle
+\end{flushright}
+
+\end{document}

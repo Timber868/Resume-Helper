@@ -1,0 +1,25 @@
+I am submitting an application for the C++ Software Developer Intern position for the period
+from May 4 to August 21, 2026. I am a Software Engineering Co-op student at McGill University
+and have enjoyed building C++ systems that integrate with robots developed within my design
+team. More recently, I’ve also been exploring GLSL in preparation for a shaders competition I
+am participating in this March. This experience fits well with the hands-on work of this role,
+particularly in display and optical systems used in flight simulation environments.
+I have significant experience shipping production software in collaborative teams. I demon-
+strated this during my co-op terms at Thales and through my robotics work at the McGill Engi-
+neering Games, where I started as a team member and later led the team. During my most recent
+internship at Thales, I improved system reliability by replacing deprecated dependencies across
+multiple microservices. I did this by updating and verifying deployment configurations (Helm and
+Kubernetes), validating GitLab CI/CD pipelines (defined in YAML files), and strengthening unit,
+integration, and end-to-end tests. During my 2024 Thales internship, I worked on a support tool
+made with Go. The software was new to me at the time, but I swiftly adapted to it and exceeded
+expectations by completing 7 updates to the tool, compared to the 2 originally planned. I have also
+built web applications with Vue.js, TypeScript, Go REST APIs, and MySQL. Thanks to these experi-
+ences, I have built an excellent foundation in creating maintainable interfaces/APIs and debugging
+end-to-end unexpected edge cases.
+I would bring disciplined engineering execution to CAE through clean, well-organized code,
+a strong testing mindset, and the ability to diagnose end-to-end behavior across software and
+hardware constraints. I’m known as an approachable teammate who gives concise updates, asks
+good questions, and enjoys collaborating across disciplines. Finally, I’m fluent in both French and
+English, and am very comfortable working in a bilingual technical environment.
+I’m applying with a direct referral from Samuel Perreault, who worked closely with me on the
+McGill CS Games leadership team in 2025.
