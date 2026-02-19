@@ -52,8 +52,10 @@ When the user asks for a **tailored cover letter** for a job (or to create/updat
 
 - Job description lives in: `data/jobs/<job-id>/` (e.g. `description.txt` or `job_posting.pdf`).
 - **Write only there:** Put the tailored cover letter LaTeX, body text, and compiled PDF in that same `data/jobs/<job-id>/` folder. Do **not** write job-specific cover letter content or overwrite `data/master/cover_letter/body.tex` or `data/master/cover_letter/info.tex` for a given job.
-- **Output naming (mandatory):** `Timothe-Roma-Cover-{Short posting name}.tex` and `Timothe-Roma-Cover-{Short posting name}.pdf`
-- Derive the short posting name from the job folder (e.g. `AI and Human Factors` → `AI-and-Human-Factors`; `CSA/Space Weather` → `CSA-Space-Weather`). Replace spaces with hyphens; keep it concise (~30 chars max).
+- **Output naming (mandatory) — same format as tailored resume:** Use the **same naming convention** as in `resume-helper.mdc` for the tailored resume. The only difference is the document type: **Cover** instead of **Resume**.
+  - **Short posting name:** Derive it **identically** from the job folder: take the folder name (e.g. `Multi-Static Radar`, `AI and Human Factors`), replace spaces with hyphens, keep it concise (~30 chars max). Examples: `Multi-Static Radar` → `Multi-Static-Radar`; `AI and Human Factors` → `AI-and-Human-Factors`; `CSA/Space Weather` → `CSA-Space-Weather`.
+  - **Filenames:** `Timothe-Roma-Cover-{Short posting name}.tex` and `Timothe-Roma-Cover-{Short posting name}.pdf`. So for the same job, the resume is `Timothe-Roma-Resume-Multi-Static-Radar.pdf` and the cover letter is `Timothe-Roma-Cover-Multi-Static-Radar.pdf`.
+  - **Do not use** generic names like `cover_letter.tex` or `cover_letter.pdf`; always use the `Timothe-Roma-Cover-{Short posting name}` form.
 - **Concrete outputs in the job folder:**
   - `data/jobs/<job-id>/Timothe-Roma-Cover-{Short posting name}.tex` (main letter)
   - Optionally: `data/jobs/<job-id>/cover_body.tex` or `cover_body.txt` for body-only
@@ -118,6 +120,6 @@ Cover letters must be **exactly one page**. No content may spill to a second pag
 - **Structure:** Always use the same structure as `data/master/cover_letter/cover.tex`: letter class, shaded header, date + greeting + recipient, body, thank-you line, signature block.
 - **Header contact line:** Email, LinkedIn, and phone must be displayed **with icons** (`\faEnvelope`, `\faLinkedinIn`, `\faPhone`) and the `fontawesome5` package, not as plain text labels. Preserve this in the master template and in any job-specific cover letter.
 - **One page:** The cover letter must fit on exactly one page. After compiling, check the PDF; if more than one page, shorten the body (trim sentences, merge or remove a paragraph) and recompile until exactly one page.
-- **Files:** Produce the main letter as `data/jobs/<job-id>/Timothe-Roma-Cover-{Short posting name}.tex`; body may be inlined or in `cover_body.tex`/`cover_body.txt` in that same folder.
+- **Files:** Produce the main letter as `data/jobs/<job-id>/Timothe-Roma-Cover-{Short posting name}.tex` (same naming format as the tailored resume in resume-helper.mdc; same short posting name, only Cover vs Resume differs). Body may be inlined or in `cover_body.tex`/`cover_body.txt` in that same folder.
 - **No em dashes:** Before delivering, search the body for `—` and replace with comma, “and”, or a new sentence. Do not use em dashes.
 - **Accuracy:** Match the posting’s requirements and assets without over-claiming; claims must be resume-backed and wording must align with the JD.

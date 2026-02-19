@@ -120,6 +120,14 @@ as needed.
     Team Member" in the tailored resume → use `\resumeOrgHeading{McGill Engineering Games}`.
   - Example: If only "RoomieRanks Website" from "McGill Computer Science Games"
     is included → omit the org heading, show the project directly.
+- **Project header bolding (standalone vs under org)**  
+  **Standalone** project/role titles (no `\resumeOrgHeading{...}` above them) must
+  be **bold** in the project heading, e.g. `\resumeProjectHeading{\textbf{Project Name} $|$ \emph{...}}{date}`.
+  **Sub-headers** (projects or roles that appear directly under an organization
+  heading, i.e. when there are two or more entries under one `\resumeOrgHeading{...}`)
+  must **not** be bold in the project/role title—use normal weight so the org
+  heading remains the visual anchor. This keeps standalone entries visually
+  prominent and avoids double emphasis when an org heading already groups the entries.
 - **No mixing across organization headers (critical)**  
   Each role or project in the master resume belongs to exactly one organization
   heading (the `\resumeOrgHeading{...}` under which it appears in the master).
@@ -215,6 +223,8 @@ as needed.
   text**. Do **not** bold skills in the Technical Skills section or in the
   italic tech stack next to job/project titles. This keeps emphasis where
   readers see concrete evidence (the bullets).
+- **Bolding density (avoid sparse emphasis)**  
+  Spread bolded terms across the page so the resume does not look under-emphasized. **Aim for at least one bolded JD-relevant term in most bullets** that mention a required or asset skill (tools, languages, methods). Do not leave long runs of bullets with no bold (e.g. many consecutive lines with no `\textbf{...}`). Prioritize: required skills in multiple bullets; key asset skills in at least one bullet each. The goal is consistent visual emphasis so recruiters see relevance in every section, not one bolded word every 15–20 lines.
 - **Sync skills from bullets to lists**  
   If a skill is mentioned in a bullet (e.g. Linux, React), add it to (1) the
   **Technical Skills** section and (2) the **italic tech list** next to that
@@ -370,6 +380,9 @@ reuse that and ask only when something is ambiguous or unmapped.
        organization has multiple roles/projects in the tailored resume, use
        `\resumeOrgHeading{...}`. If only one role/project from an org is included,
        omit the org heading and show the role/project directly.
+     - **Project header bolding:** Bold standalone project/role titles
+       (`\textbf{...}`) when there is no org heading above them; do not bold
+       project/role titles that are sub-headers under an org heading.
      - **Respect org–experience mapping:** Each experience appears only under
        the same `\resumeOrgHeading{...}` as in the master (when org headings are
        used); do not mix roles from
@@ -380,6 +393,11 @@ reuse that and ask only when something is ambiguous or unmapped.
        in **bullet-point text** is wrapped with `\textbf{...}`. Do **not** bold
        skills in the Technical Skills section or in the italic tech stack next
        to job/project titles.
+     - **Density:** Aim for at least one bolded term in most bullets that
+       mention a JD-relevant skill. Spread bold across Work Experience and
+       Projects so no long stretch of bullets has no bold. Required and key
+       asset skills should appear bolded in multiple bullets, not just once
+       on the page.
      - Avoid double-wrapping text that is already bold. Prioritize required
        skills over nice-to-have skills.
    - **LaTeX technical constraints:**
@@ -428,7 +446,7 @@ reuse that and ask only when something is ambiguous or unmapped.
     - Check for **spillover**: lines or bullets that barely wrap; tighten or rephrase so vertical space is used efficiently.
     - **Check styling and spacing:** Section headings must not overlap previous text; rule under section titles must not cut through first entry; gaps 5–10 pt. Fix in `.tex` preamble or section macros if needed, then recompile.
     - Verify **dotted bullets**: list items show dotted symbols (•), not straight dashes; if straight, add or fix `\labelitemi` / `\labelitemii` in preamble and recompile.
-   - **Checklist:** Exactly one page; page fill ~85–98%; org headings only when multiple; no mixing; no orphans/spillover; bold in bullet text only; max 4 bullets per entry; dotted bullets; styling correct. **When a check fails:** apply fixes (remove content, fix preamble), recompile, re-inspect; do not stop until PDF is correct.
+   - **Checklist:** Exactly one page; page fill ~85–98%; org headings only when multiple; no mixing; no orphans/spillover; **bold density** (bolded JD-relevant terms spread across bullets, not sparse); bold in bullet text only; max 4 bullets per entry; dotted bullets; styling correct. **When a check fails:** apply fixes (remove content, fix preamble), recompile, re-inspect; do not stop until PDF is correct.
 
    - **Cross-check with LaTeX and heuristics when PDF is not inspectable**
      If the PDF cannot be read (e.g. binary only, no viewer):
@@ -448,7 +466,9 @@ reuse that and ask only when something is ambiguous or unmapped.
         orphans; RCC danger zone (100–190) avoided in source.
      5. **Bolded relevant skills** — required job-posting skills appear bolded at
         least once in **bullet-point text only** (not in the Technical Skills
-        section or in the tech stack next to titles).
+        section or in the tech stack next to titles). **Bolding density** —
+        bolded terms are spread across Work Experience and Projects (at least
+        one bold in most bullets that mention a JD skill); no long runs with no bold.
      6. **Dotted bullets** — list items show dotted bullet symbols (•); preamble
         includes `\labelitemi` / `\labelitemii` from master; if PDF shows straight
         bullets, add or fix these and recompile.
