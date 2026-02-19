@@ -3,7 +3,7 @@ description: Tailor cover letters using the master cover.tex form (letter class,
 globs: |
   **/cover*.tex
   data/master/cover_letter/**
-  data/jobs/**/tailored_cover.tex
+  data/jobs/**/Timothe-Roma-Cover-*.tex
   data/jobs/**/cover_body*
 alwaysApply: false
 ---
@@ -52,11 +52,13 @@ When the user asks for a **tailored cover letter** for a job (or to create/updat
 
 - Job description lives in: `data/jobs/<job-id>/` (e.g. `description.txt` or `job_posting.pdf`).
 - **Write only there:** Put the tailored cover letter LaTeX, body text, and compiled PDF in that same `data/jobs/<job-id>/` folder. Do **not** write job-specific cover letter content or overwrite `data/master/cover_letter/body.tex` or `data/master/cover_letter/info.tex` for a given job.
+- **Output naming (mandatory):** `Timothe-Roma-Cover-{Short posting name}.tex` and `Timothe-Roma-Cover-{Short posting name}.pdf`
+- Derive the short posting name from the job folder (e.g. `AI and Human Factors` → `AI-and-Human-Factors`; `CSA/Space Weather` → `CSA-Space-Weather`). Replace spaces with hyphens; keep it concise (~30 chars max).
 - **Concrete outputs in the job folder:**
-  - `data/jobs/<job-id>/tailored_cover.tex` (main letter, or the single cover letter file for that job)
+  - `data/jobs/<job-id>/Timothe-Roma-Cover-{Short posting name}.tex` (main letter)
   - Optionally: `data/jobs/<job-id>/cover_body.tex` or `cover_body.txt` for body-only
-  - Compiled PDF: `data/jobs/<job-id>/tailored_cover.pdf` (or `cover_letter.pdf` in that folder)
-- Compile from the job folder: `pdflatex tailored_cover.tex` run from `data/jobs/<job-id>/` so paths like `\input{../../master/cover_letter/info}` resolve. The PDF is produced in that same job folder.
+  - Compiled PDF: `data/jobs/<job-id>/Timothe-Roma-Cover-{Short posting name}.pdf`
+- Compile from the job folder: `pdflatex "Timothe-Roma-Cover-{Short posting name}.tex"` run from `data/jobs/<job-id>/` so paths like `\input{../../master/cover_letter/info}` (or `../../../` for nested folders) resolve. The PDF is produced in that same job folder.
 
 ## Voice and style (human-written)
 
@@ -85,15 +87,15 @@ Tailor claims and wording so the letter matches the posting **without over-claim
 ## Where to put job-specific files
 
 - **Per-job folder:** `data/jobs/<job-id>/` (the folder that contains the job description). All cover letter outputs for that job go here only.
-- **Tailored cover letter:** `data/jobs/<job-id>/tailored_cover.tex`
-  - Self-contained or `\input{../../master/cover_letter/info}` and optional `\input{cover_body}` for body text.
-- **Optional body-only file:** `data/jobs/<job-id>/cover_body.tex` (or `.txt`) if you prefer to keep body text in a separate file; then in `tailored_cover.tex` use `\input{cover_body}` instead of inlining the body.
-- **Compiled PDF:** `data/jobs/<job-id>/tailored_cover.pdf` (or `cover_letter.pdf` in that folder). Do not rely on or write the final PDF into `data/master/cover_letter/` for a job-specific letter.
+- **Tailored cover letter:** `data/jobs/<job-id>/Timothe-Roma-Cover-{Short posting name}.tex`
+  - Self-contained or `\input{../../master/cover_letter/info}` (adjust path depth for nested job folders) and optional `\input{cover_body}` for body text.
+- **Optional body-only file:** `data/jobs/<job-id>/cover_body.tex` (or `.txt`) if you prefer to keep body text in a separate file; then in the main cover letter use `\input{cover_body}` instead of inlining the body.
+- **Compiled PDF:** `data/jobs/<job-id>/Timothe-Roma-Cover-{Short posting name}.pdf`. Do not rely on or write the final PDF into `data/master/cover_letter/` for a job-specific letter.
 
 ## Compilation
 
-- Run `pdflatex tailored_cover.tex` from `data/jobs/<job-id>/` so that `\input{../../master/cover_letter/info}` resolves.
-- Output: `tailored_cover.pdf` in the same job folder (nowhere else).
+- Run `pdflatex "Timothe-Roma-Cover-{Short posting name}.tex"` from `data/jobs/<job-id>/` so that `\input{...}` paths to master resolve (e.g. `../../master/cover_letter/info` or `../../../` for nested folders).
+- Output: `Timothe-Roma-Cover-{Short posting name}.pdf` in the same job folder (nowhere else).
 - **fontawesome5 required:** The template uses `\faEnvelope`, `\faLinkedinIn`, and `\faPhone` for the header. Keep `\usepackage{fontawesome5}` in the preamble. If compilation fails with "Font fa5free2solid not found", run `initexmf --mkmaps` and `initexmf --update-fndb`, then recompile; do not remove the package or switch the contact line to plain text.
 
 ## Page length (one page, mandatory)
@@ -101,7 +103,7 @@ Tailor claims and wording so the letter matches the posting **without over-claim
 Cover letters must be **exactly one page**. No content may spill to a second page.
 
 - **Target:** The body, opening, closing, and signature must fit on a single page with the template’s header and layout. Aim for body length that leaves a small margin at the bottom; do not under-fill (e.g. half a page) or over-fill (second page).
-- **When creating or editing a cover letter:** After writing or updating the body (in `tailored_cover.tex` or `cover_body.tex`), **compile** the PDF, then **check page count**.
+- **When creating or editing a cover letter:** After writing or updating the body (in `Timothe-Roma-Cover-{Short posting name}.tex` or `cover_body.tex`), **compile** the PDF, then **check page count**.
 - **If the PDF is more than one page:** Shorten the body by:
   - Trimming or merging sentences within paragraphs (keep one strong example instead of two).
   - Removing the least essential paragraph or folding its key point into another paragraph.
@@ -114,8 +116,8 @@ Cover letters must be **exactly one page**. No content may spill to a second pag
 
 - **Output location:** All cover letter files and the compiled PDF for a job go in `data/jobs/<job-id>/` (the folder where the job description is). Do not write job-specific cover letter content into `data/master/cover_letter/`.
 - **Structure:** Always use the same structure as `data/master/cover_letter/cover.tex`: letter class, shaded header, date + greeting + recipient, body, thank-you line, signature block.
-- **Header contact line:** Email, LinkedIn, and phone must be displayed **with icons** (`\faEnvelope`, `\faLinkedinIn`, `\faPhone`) and the `fontawesome5` package, not as plain text labels. Preserve this in the master template and in any job-specific `tailored_cover.tex`.
+- **Header contact line:** Email, LinkedIn, and phone must be displayed **with icons** (`\faEnvelope`, `\faLinkedinIn`, `\faPhone`) and the `fontawesome5` package, not as plain text labels. Preserve this in the master template and in any job-specific cover letter.
 - **One page:** The cover letter must fit on exactly one page. After compiling, check the PDF; if more than one page, shorten the body (trim sentences, merge or remove a paragraph) and recompile until exactly one page.
-- **Files:** Produce the main letter as `data/jobs/<job-id>/tailored_cover.tex`; body may be inlined or in `cover_body.tex`/`cover_body.txt` in that same folder.
+- **Files:** Produce the main letter as `data/jobs/<job-id>/Timothe-Roma-Cover-{Short posting name}.tex`; body may be inlined or in `cover_body.tex`/`cover_body.txt` in that same folder.
 - **No em dashes:** Before delivering, search the body for `—` and replace with comma, “and”, or a new sentence. Do not use em dashes.
 - **Accuracy:** Match the posting’s requirements and assets without over-claiming; claims must be resume-backed and wording must align with the JD.
