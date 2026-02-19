@@ -29,7 +29,12 @@ When the user asks for a **tailored cover letter** for a job (or to create/updat
 
 3. **Header**
    - Shaded banner: `\AddToShipoutPictureBG` with `\color{gr}` and the rule as in `cover.tex`
-   - Centered block: `\myname` (large, small caps), then email, LinkedIn, phone with `\faEnvelope`, `\faLinkedinIn`, `\faPhone` and `\href`
+   - Centered block: `\myname` (large, small caps), then the contact line (see below).
+   - **Contact line: use icons, not plain text (mandatory).** Email, LinkedIn, and phone must be displayed **with Font Awesome icons** as in the master template, not as plain text labels like "Email:", "LinkedIn:", "Phone:". Always include the `fontawesome5` package and use:
+     - `\href{mailto:\myemail}{\faEnvelope\enspace \myemail}\hfill`
+     - `\href{https://linkedin.com/in/\mylinkedin}{\faLinkedinIn\enspace linkedin.com/in/\mylinkedin}\hfill`
+     - `\href{tel:\myphone}{\faPhone\enspace \myphone}\hfill`
+     Do **not** replace these with plain-text labels; the header must show the envelope icon, LinkedIn icon, and phone icon next to the respective contact info so the PDF matches the intended professional look.
 
 4. **Opening block**
    - Date (e.g. current application date)
@@ -89,6 +94,7 @@ Tailor claims and wording so the letter matches the posting **without over-claim
 
 - Run `pdflatex tailored_cover.tex` from `data/jobs/<job-id>/` so that `\input{../../master/cover_letter/info}` resolves.
 - Output: `tailored_cover.pdf` in the same job folder (nowhere else).
+- **fontawesome5 required:** The template uses `\faEnvelope`, `\faLinkedinIn`, and `\faPhone` for the header. Keep `\usepackage{fontawesome5}` in the preamble. If compilation fails with "Font fa5free2solid not found", run `initexmf --mkmaps` and `initexmf --update-fndb`, then recompile; do not remove the package or switch the contact line to plain text.
 
 ## Page length (one page, mandatory)
 
@@ -108,6 +114,7 @@ Cover letters must be **exactly one page**. No content may spill to a second pag
 
 - **Output location:** All cover letter files and the compiled PDF for a job go in `data/jobs/<job-id>/` (the folder where the job description is). Do not write job-specific cover letter content into `data/master/cover_letter/`.
 - **Structure:** Always use the same structure as `data/master/cover_letter/cover.tex`: letter class, shaded header, date + greeting + recipient, body, thank-you line, signature block.
+- **Header contact line:** Email, LinkedIn, and phone must be displayed **with icons** (`\faEnvelope`, `\faLinkedinIn`, `\faPhone`) and the `fontawesome5` package, not as plain text labels. Preserve this in the master template and in any job-specific `tailored_cover.tex`.
 - **One page:** The cover letter must fit on exactly one page. After compiling, check the PDF; if more than one page, shorten the body (trim sentences, merge or remove a paragraph) and recompile until exactly one page.
 - **Files:** Produce the main letter as `data/jobs/<job-id>/tailored_cover.tex`; body may be inlined or in `cover_body.tex`/`cover_body.txt` in that same folder.
 - **No em dashes:** Before delivering, search the body for `—` and replace with comma, “and”, or a new sentence. Do not use em dashes.
