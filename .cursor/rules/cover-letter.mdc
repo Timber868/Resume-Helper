@@ -41,12 +41,26 @@ When the user asks for a **tailored cover letter** for a job (or to create/updat
    - Mirror tone and structure of `data/master/cover_letter/body.txt`: opening line (application + role + dates), fit with your background, experience evidence (concrete examples), what you bring, languages/bilingual if relevant
    - Cross-check the job description (or `data/jobs/<job-id>/job_posting_extracted.json`): use wording that matches the posting’s requirements and assets without over-claiming (see “Accuracy and fit to the job posting” below).
 
+## Output location (mandatory)
+
+**All job-specific cover letter output must live in the same folder as the job description.**
+
+- Job description lives in: `data/jobs/<job-id>/` (e.g. `description.txt` or `job_posting.pdf`).
+- **Write only there:** Put the tailored cover letter LaTeX, body text, and compiled PDF in that same `data/jobs/<job-id>/` folder. Do **not** write job-specific cover letter content or overwrite `data/master/cover_letter/body.tex` or `data/master/cover_letter/info.tex` for a given job.
+- **Concrete outputs in the job folder:**
+  - `data/jobs/<job-id>/tailored_cover.tex` (main letter, or the single cover letter file for that job)
+  - Optionally: `data/jobs/<job-id>/cover_body.tex` or `cover_body.txt` for body-only
+  - Compiled PDF: `data/jobs/<job-id>/tailored_cover.pdf` (or `cover_letter.pdf` in that folder)
+- Compile from the job folder: `pdflatex tailored_cover.tex` run from `data/jobs/<job-id>/` so paths like `\input{../../master/cover_letter/info}` resolve. The PDF is produced in that same job folder.
+
 ## Voice and style (human-written)
 
 Cover letter body text must **sound human-written** and match the writing style of `data/master/cover_letter/body.txt`:
 
 - **Match body.txt style:** Direct first person (“I am submitting”, “I have”, “I would bring”). Short to medium sentences. Concrete details (dates, tools, numbers) without sounding like a list. Natural transitions (“Thanks to these experiences”, “Finally,”).
-- **Avoid AI tell-tale signs:** Do **not** use em dashes (—). Use commas, “and”, or new sentences instead. Avoid: “leveraged”, “utilized”, “seamless”, “robust”, “delve”, “passionate about”, “excited to”, long chains of adjectives, or stiff/overly formal phrasing. Prefer plain, clear wording.
+- **Forbidden (enforce strictly):**
+  - **No em dashes (—).** Before finalizing, search the entire body for the character `—` (Unicode U+2014) and replace every occurrence with a comma and space, the word “and”, or a new sentence. Em dashes read as AI-generated and are not allowed.
+  - Also avoid: “leveraged”, “utilized”, “seamless”, “robust”, “delve”, “passionate about”, “excited to”, long chains of adjectives, and stiff or overly formal phrasing. Prefer plain, clear wording.
 - **Human pass:** Before finalizing, read the body aloud (or in your head) and fix any phrase that sounds generic, padded, or like typical AI prose. Prefer the same level of warmth and specificity as in body.txt.
 
 ## Accuracy and fit to the job posting
@@ -65,18 +79,36 @@ Tailor claims and wording so the letter matches the posting **without over-claim
 
 ## Where to put job-specific files
 
-- **Per-job folder:** `data/jobs/<job-id>/`
+- **Per-job folder:** `data/jobs/<job-id>/` (the folder that contains the job description). All cover letter outputs for that job go here only.
 - **Tailored cover letter:** `data/jobs/<job-id>/tailored_cover.tex`
   - Self-contained or `\input{../../master/cover_letter/info}` and optional `\input{cover_body}` for body text.
 - **Optional body-only file:** `data/jobs/<job-id>/cover_body.tex` (or `.txt`) if you prefer to keep body text in a separate file; then in `tailored_cover.tex` use `\input{cover_body}` instead of inlining the body.
+- **Compiled PDF:** `data/jobs/<job-id>/tailored_cover.pdf` (or `cover_letter.pdf` in that folder). Do not rely on or write the final PDF into `data/master/cover_letter/` for a job-specific letter.
 
 ## Compilation
 
 - Run `pdflatex tailored_cover.tex` from `data/jobs/<job-id>/` so that `\input{../../master/cover_letter/info}` resolves.
-- Output: `tailored_cover.pdf` in the same job folder.
+- Output: `tailored_cover.pdf` in the same job folder (nowhere else).
+
+## Page length (one page, mandatory)
+
+Cover letters must be **exactly one page**. No content may spill to a second page.
+
+- **Target:** The body, opening, closing, and signature must fit on a single page with the template’s header and layout. Aim for body length that leaves a small margin at the bottom; do not under-fill (e.g. half a page) or over-fill (second page).
+- **When creating or editing a cover letter:** After writing or updating the body (in `tailored_cover.tex` or `cover_body.tex`), **compile** the PDF, then **check page count**.
+- **If the PDF is more than one page:** Shorten the body by:
+  - Trimming or merging sentences within paragraphs (keep one strong example instead of two).
+  - Removing the least essential paragraph or folding its key point into another paragraph.
+  - Shortening clauses and removing filler; keep concrete details (dates, tools, numbers) and direct first-person voice.
+  Do **not** reduce font size or change the template’s layout to fit; trim content only. Recompile and re-check until the PDF is exactly one page.
+- **After compilation:** Confirm the output is exactly one page. If a second page appears, apply the shortening steps above, then recompile and verify again. Do not deliver or finalize a cover letter that is over one page.
+- **Checklist:** Exactly one page; no content on page 2; body fits with the standard template (header, date, greeting, body, thank-you line, signature).
 
 ## Summary
 
-- **Always** use the same structure as `data/master/cover_letter/cover.tex`: letter class, shaded header, date + greeting + recipient, body, thank-you line, signature block.
-- **Always** produce (or edit) a single main file in the form of `cover.tex` (e.g. `tailored_cover.tex`) per job; body may be inlined or in `cover_body.tex`/`cover_body.txt`.
-- **Always** match the posting’s requirements and assets without over-claiming: use “Accuracy and fit to the job posting” so claims (e.g. trained models, libraries) are resume-backed and wording aligns with the JD.
+- **Output location:** All cover letter files and the compiled PDF for a job go in `data/jobs/<job-id>/` (the folder where the job description is). Do not write job-specific cover letter content into `data/master/cover_letter/`.
+- **Structure:** Always use the same structure as `data/master/cover_letter/cover.tex`: letter class, shaded header, date + greeting + recipient, body, thank-you line, signature block.
+- **One page:** The cover letter must fit on exactly one page. After compiling, check the PDF; if more than one page, shorten the body (trim sentences, merge or remove a paragraph) and recompile until exactly one page.
+- **Files:** Produce the main letter as `data/jobs/<job-id>/tailored_cover.tex`; body may be inlined or in `cover_body.tex`/`cover_body.txt` in that same folder.
+- **No em dashes:** Before delivering, search the body for `—` and replace with comma, “and”, or a new sentence. Do not use em dashes.
+- **Accuracy:** Match the posting’s requirements and assets without over-claiming; claims must be resume-backed and wording must align with the JD.
