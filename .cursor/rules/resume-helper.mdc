@@ -174,7 +174,7 @@ as needed.
   section heading has clear vertical separation from the content above; if headings
   overlap the previous text, increase the `before-sep` in `\titlespacing*` or add
   positive vspace after `\resumeSubHeadingListEnd`.
-- **Bullet style: dotted, not straight**  
+- **Bullet style: dotted, not straight (mandatory — do not change)**  
   List items (experience and project bullets) must use **dotted** bullet symbols
   (•), not straight dashes, hyphens, or lines. When generating the tailored resume LaTeX file,
   the preamble **must** include the same itemize label redefinitions as the master
@@ -183,20 +183,18 @@ as needed.
   `\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}` (or the exact
   equivalent used in the master). Do not omit these lines; without them, LaTeX
   may use the default document-class bullet (often a dash), producing "straight"
-  instead of dotted bullets. When inspecting the PDF, verify that bullet points
+  instead of dotted bullets. **When using babel with another language** (e.g. `\usepackage[french]{babel}`), the language pack can override `\labelitemi` and produce dashes; the agent **must** then force dotted bullets by setting the label **explicitly in the itemize environment** (e.g. with enumitem: `\begin{itemize}[topsep=2pt,itemsep=1pt,parsep=0pt,partopsep=0pt,label=$\vcenter{\hbox{\tiny$\bullet$}}$]` in the macro used for bullet lists, such as `\resumeItemListStart`), so that bullets always render as dots regardless of babel. When inspecting the PDF, verify that bullet points
   appear as dots (•); if they appear as lines or dashes, add or fix the
-  `\labelitemi` / `\labelitemii` redefinitions in the tailored `.tex` preamble
-  and recompile.
+  label (preamble and/or itemize option) and recompile.
 - **Bullet counts per entry**  
   - **Work experience:** Each work experience entry must have **at least 4 bullet points** (and at most 4). Never reduce below 4.
   - **Projects:** 2–4 bullets per project; prefer 3 for strong projects. No entry may have more than 4 bullets.
   - If the master has more than 4 bullets for a project, remove the least relevant until at most 4 remain.
 - **Target: just under one page (page fill)**  
   The tailored resume must **use the page fully**—aim for content that reaches
-  **just under one page** (e.g. ~90–98% of the page used), not 70% or less.
-  - **How to fit one page:** To fit under one page, **add or remove content**
-    (e.g. include or drop a project, add or remove bullet points, include or
-    drop an experience). Do **not** condense by turning multiple bullet points
+  **just under one page** (e.g. ~90–98% of the page used). **The page must be at least 90% filled**; never leave a large empty band at the bottom. Do **not** achieve fit or fill by reducing font size or changing the template’s font/layout; **only by content** (adding or removing bullet points and sections).
+  - **When the page is underfilled (too short):** Add more content from the master resume: **add bullet points** (with slight rewording to match the job) to existing entries, or **restore a dropped project** with 2–4 bullets. Prefer adding bullets that are already present in the master with light rewording. Do **not** merge bullets into fewer points to save space; do **not** reduce font. Recompile and re-check until the page is at least ~90% full and still one page.
+  - **How to fit one page when overfilled:** To fit under one page when the draft spills to two pages, **remove** content (drop a project or remove bullets from projects). Do **not** condense by turning multiple bullet points
     into single long lines, merging bullets into one, or reducing the number
     of Technical Skills categories. Keep bullets as **distinct points**; keep
     the same number of skill lines as in the master.
@@ -208,9 +206,9 @@ as needed.
   - **When inspecting the PDF:** If the last substantial content (e.g. Education
     or the final project) leaves a **large blank band** at the bottom (roughly
     the bottom 20–30% of the page empty), treat this as a failure: the resume
-    is **too short**. Add content (restore another project, add bullets to
-    existing entries, or add a skill line) and recompile until the page is
-    nearly full but still one page.
+    is **too short**. Add content (restore another project, add bullets from
+    the master with slight rewording) and recompile until the page is
+    at least ~90% full but still one page.
   - **Do not** over-trim to "play it safe." The goal is one full page of
     strong, relevant content—not a half-filled page.
 
@@ -445,7 +443,7 @@ reuse that and ask only when something is ambiguous or unmapped.
       a line at the end of a bullet (RCC danger zone); severe overfull lines.
     - Check for **spillover**: lines or bullets that barely wrap; tighten or rephrase so vertical space is used efficiently.
     - **Check styling and spacing:** Section headings must not overlap previous text; rule under section titles must not cut through first entry; gaps 5–10 pt. Fix in `.tex` preamble or section macros if needed, then recompile.
-    - Verify **dotted bullets**: list items show dotted symbols (•), not straight dashes; if straight, add or fix `\labelitemi` / `\labelitemii` in preamble and recompile.
+    - Verify **dotted bullets**: list items show dotted symbols (•), not straight dashes; if straight, add or fix `\labelitemi` / `\labelitemii` in preamble and recompile. If the resume uses babel with another language (e.g. French), also set `label=$\vcenter{\hbox{\tiny$\bullet$}}$` in the itemize options (e.g. in `\resumeItemListStart`) so babel cannot override the bullet style.
    - **Checklist:** Exactly one page; page fill ~85–98%; org headings only when multiple; no mixing; no orphans/spillover; **bold density** (bolded JD-relevant terms spread across bullets, not sparse); bold in bullet text only; max 4 bullets per entry; dotted bullets; styling correct. **When a check fails:** apply fixes (remove content, fix preamble), recompile, re-inspect; do not stop until PDF is correct.
 
    - **Cross-check with LaTeX and heuristics when PDF is not inspectable**
@@ -470,7 +468,7 @@ reuse that and ask only when something is ambiguous or unmapped.
         bolded terms are spread across Work Experience and Projects (at least
         one bold in most bullets that mention a JD skill); no long runs with no bold.
      6. **Dotted bullets** — list items show dotted bullet symbols (•); preamble
-        includes `\labelitemi` / `\labelitemii` from master; if PDF shows straight
+        includes `\labelitemi` / `\labelitemii` from master; if babel is used (e.g. French), itemize must also set `label=` explicitly so bullets stay dots; if PDF shows straight
         bullets, add or fix these and recompile.
      7. **Max 4 bullets per entry** — no role or project has more than 4 bullets.
      8. **Styling and spacing** — no overlapping headings, rules cutting through
