@@ -211,6 +211,11 @@ __marimo__/
 *.pdf
 *.json
 
+# Ignore JDs
+*.txt
+*.out
+*.aux
+
 # But keep example/template files
 !data/master/main.tex
 !**/*.example.json
