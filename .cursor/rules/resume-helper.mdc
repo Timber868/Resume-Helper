@@ -120,6 +120,17 @@ as needed.
     Team Member" in the tailored resume → use `\resumeOrgHeading{McGill Engineering Games}`.
   - Example: If only "RoomieRanks Website" from "McGill Computer Science Games"
     is included → omit the org heading, show the project directly.
+  - **Single entry under an org: merge into one heading (no org + sub-header).**  
+    If an organization has **only one** role or project in the tailored resume, do
+    **not** use `\resumeOrgHeading{Org Name}` followed by a single sub-header (e.g.
+    "Team Captain"). That creates two headers for one entry. Instead, **merge** the
+    org name into the project/role title and show it as a **single standalone**
+    heading (bold). Example: use
+    `\resumeProjectHeading{\textbf{McGill Computer Science Games Team Captain} $|$ \emph{...}}{date}`
+    rather than `\resumeOrgHeading{McGill Computer Science Games}` plus
+    `\resumeProjectHeading{Team Captain}{...}`. Same logic for any org with only
+    one included entry (e.g. "McGill Engineering Games VP Machine" if only VP
+    Machine is included).
 - **Project header bolding (standalone vs under org)**  
   **Standalone** project/role titles (no `\resumeOrgHeading{...}` above them) must
   be **bold** in the project heading, e.g. `\resumeProjectHeading{\textbf{Project Name} $|$ \emph{...}}{date}`.
@@ -216,6 +227,8 @@ as needed.
 
 ## Skill bolding and skill list sync
 
+- **Include all JD-relevant skills in the resume (mandatory)**  
+  **Every** skill or competency from the job description that the candidate genuinely has must appear somewhere on the tailored resume. For each such skill: (1) add it to the **Technical Skills** section (in the appropriate category, preserving the same number of categories as the master), and/or (2) ensure it is evidenced in at least one **bullet point** (with optional `\textbf{...}` for emphasis in the bullet text only). Do not omit a JD-relevant skill because it was “implied”; list it explicitly in the skills block and back it with a concrete bullet where possible. This applies to both technical skills (e.g. POO, structures de données, algorithmes, revues de code, Agile) and soft/process skills (e.g. communication, travail d'équipe, résolution de problèmes).
 - **Bold JD-relevant skills only in bullet points**  
   Bold skills that correspond to the job description **only in the bullet-point
   text**. Do **not** bold skills in the Technical Skills section or in the
@@ -377,7 +390,9 @@ reuse that and ask only when something is ambiguous or unmapped.
      - **Use org headings only when multiple sub-sections exist:** If an
        organization has multiple roles/projects in the tailored resume, use
        `\resumeOrgHeading{...}`. If only one role/project from an org is included,
-       omit the org heading and show the role/project directly.
+       do **not** use an org heading plus one sub-header; instead **merge** the
+       org name into the project/role title as a single standalone heading (e.g.
+       `\textbf{McGill Computer Science Games Team Captain}`).
      - **Project header bolding:** Bold standalone project/role titles
        (`\textbf{...}`) when there is no org heading above them; do not bold
        project/role titles that are sub-headers under an org heading.
@@ -456,7 +471,8 @@ reuse that and ask only when something is ambiguous or unmapped.
      1. **Exactly one page** — no second page; single-page limit is mandatory.
      2. **Org headings only when multiple sub-sections** — organization headings
         (`\resumeOrgHeading{...}`) appear only when there are multiple roles/projects
-        under that org; single items are shown without an org heading.
+        under that org; single items are shown without an org heading (merge org
+        name into the project/role title, e.g. "McGill Computer Science Games Team Captain").
      3. **No mixing across org headers** — when org headings are used, headings and
         their listed roles match
         the master’s org–experience mapping and order.
@@ -551,7 +567,8 @@ Typical workflow for the user:
   1. Exactly one page (exceeding it is failure).
   2. Page fill: aim for **just under one page** (~85–98%); if too short, add content and recompile.
   3. Org headings only when multiple sub-sections: use `\resumeOrgHeading{...}` only
-     when there are multiple roles/projects from that org; omit for single items.
+     when there are multiple roles/projects from that org; omit for single items
+     (merge org name into project/role title instead, e.g. "McGill Computer Science Games Team Captain").
   4. No bullets in the RCC danger zone (100–190); prefer short or clearly multi-line.
   5. No wasteful spillover: tighten lines that barely wrap.
   5a. **Bullets stay as points:** Do not merge multiple bullets into single
