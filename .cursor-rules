@@ -1,0 +1,17 @@
+---
+description: Ensure resume and cover letter generation always respects existing tailoring rules.
+alwaysApply: true
+---
+
+# Resume and Cover Letter Rule Coordination
+
+When generating or editing **custom resumes** or **cover letters** for specific jobs:
+
+- **Always read and follow** the guidance in `.cursor/rules/resume-helper.mdc` for any resume tailoring work.
+- **Always read and follow** the guidance in `.cursor/rules/cover-letter.mdc` for any cover letter tailoring work.
+- Do **not** bypass or contradict these two rule files; treat them as the single source of truth for:
+  - Which files to read/write under `data/master/` and `data/jobs/<job-id>/`
+  - LaTeX structure, layout, naming conventions, and compilation steps
+  - Selection, emphasis, and bolding strategy for skills and experience
+- If both a tailored resume and cover letter are requested for the same job, apply the corresponding rule file for each artifact and keep filenames and short posting names consistent between them.
+
