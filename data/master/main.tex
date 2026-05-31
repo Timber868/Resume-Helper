@@ -27,21 +27,8 @@
 \usepackage{lmodern}
 \input{glyphtounicode}
 
-
-%----------FONT OPTIONS----------
-% sans-serif
-% \usepackage[sfdefault]{FiraSans}
-% \usepackage[sfdefault]{roboto}
-% \usepackage[sfdefault]{noto-sans}
-% \usepackage[default]{sourcesanspro}
-
-% serif
-% \usepackage{CormorantGaramond}
-% \usepackage{charter}
-
-
 \pagestyle{fancy}
-\fancyhf{} % clear all header and footer fields
+\fancyhf{}
 \fancyfoot{}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
@@ -54,7 +41,6 @@
 \addtolength{\textheight}{1.4in}
 
 \urlstyle{same}
-
 \raggedbottom
 \raggedright
 \setlength{\tabcolsep}{0in}
@@ -64,7 +50,7 @@
   \vspace{-5pt}\scshape\raggedright\large\bfseries
 }{}{0em}{}[\color{black}\titlerule \vspace{-17pt}]
 
-% Ensure that generate pdf is machine readable/ATS parsable
+% Ensure machine readable
 \pdfgentounicode=1
 
 %-------------------------
@@ -81,15 +67,7 @@
 \newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-8pt}}
 
 \newcommand{\resumeItem}[1]{
-  \item\small{
-    {#1 \vspace{-2pt}}
-  }
-}
-
-\newcommand{\classesList}[4]{
-    \item\small{
-        {#1 #2 #3 #4 \vspace{-2pt}}
-  }
+  \item\small{{#1 \vspace{-2pt}}}
 }
 
 \newcommand{\resumeOrgHeading}[1]{
@@ -102,13 +80,6 @@
     \end{tabular*}\vspace{-7pt} 
 }
 
-\newcommand{\resumeSubSubheading}[2]{
-    \item
-    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
-      \textit{\small#1} & \textit{\small #2} \\
-    \end{tabular*}\vspace{-7pt}
-}
-
 \newcommand{\resumeProjectHeading}[2]{
     \item
     \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
@@ -116,22 +87,15 @@
     \end{tabular*}
 }
 
-\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
-
 \renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
 \renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
 
 %-------------------------------------------
 %%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 \begin{document}
-
-%----------HEADING----------
-% \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-%   \textbf{\href{http://sourabhbajaj.com/}{\Large Sourabh Bajaj}} & Email : \href{mailto:sourabh@sourabhbajaj.com}{sourabh@sourabhbajaj.com}\\
-%   \href{http://sourabhbajaj.com/}{http://www.sourabhbajaj.com} & Mobile : +1-123-456-7890 \\
-% \end{tabular*}
 
 \begin{center}
     {\Huge \scshape \textbf{Timothe Roma}} \\ \vspace{5pt}
@@ -143,9 +107,17 @@
 \end{center}
 \vspace{6pt}
 
+%-----------EDUCATION-----------
+\section{Education}
+\vspace{13pt}
+\resumeSubHeadingListStart
+  \resumeSubheading
+    {McGill University}{08/2022 -- 05/2027}
+    {Bachelor of Engineering, Software Engineering (Co-op) -- One Year Entrance Scholarship}
+    {Montreal, Quebec}
+\resumeSubHeadingListEnd
 
-
-%-----------PROGRAMMING SKILLS-----------
+%-----------TECHNICAL SKILLS-----------
 \section{Technical Skills}
 \vspace{10pt}
  \begin{itemize}[leftmargin=0.15in, label={}]
@@ -159,18 +131,27 @@
  \end{itemize}
  \vspace{-20pt}
 
-
-%-----------EXPERIENCE-----------
-\section{Work Experience} 
-
-
+%-----------WORK EXPERIENCE-----------
+\section{Work Experience}
 \resumeSubHeadingListStart  
 
-\resumeOrgHeading{Thales -- Full-Stack Software Engineer Co-op}
-  % ==== DPOD (most recent) ====
+\vspace{5pt}
+
+% ==== Fujitsu (most recent) ====
+  \resumeProjectHeading
+    {\textbf{Fujitsu} $|$ QA Automation Engineer Co-op $|$ \emph{Python, pytest, Playwright, API/SDK Testing}}
+    {05/2026 -- Present}
+  \resumeItemListStart
+    \resumeItem{Expanding automated test coverage of a core product service from \textbf{30\%} to \textbf{80\%} of customer-facing scenarios, building \textbf{API}, \textbf{SDK}, and \textbf{UI} tests in \textbf{Python} with \textbf{pytest} and \textbf{Playwright}.}
+    \resumeItem{Mapped the SDK's \textbf{WebSocket} commands, responses, events, and errors to debug failing tests and fix defects.}
+    \resumeItem{Building a new automated test suite for a second service through \textbf{SDK} health checks and automated test reporting.}
+  \resumeItemListEnd
+
+
+    % ==== Thales DPoD ====
 \resumeProjectHeading
-    {Data Protection on Demand Team $|$ \emph{Java, Spring Boot, Kubernetes, GitLab CI}}
-    {05/2025 -- 09/2025}
+{\textbf{Thales} $|$ Full-Stack Software Engineer Co-op, DPoD Team $|$ \emph{Java, Spring Boot, Kubernetes, GitLab CI}}
+{05/2025 -- 09/2025}
   \resumeItemListStart
     \resumeItem{Replaced a deprecated dependency across 14 Spring Boot services, unblocking the migration from Java 11 to Java 17 by implementing a compatibility helper to preserve legacy behavior.}
     \resumeItem{Triggered GitLab CI pipelines to build and test service updates, deploying versioned artifacts via Helm to an isolated Kubernetes namespace for integration validation prior to promotion.}
@@ -178,30 +159,28 @@
     \resumeItem{Increased unit test coverage and resolved SonarQube findings to reduce regression risk during the migration.}
   \resumeItemListEnd
 
-% ==== LCH (earlier) ====
+% ==== Thales LCH ====
 \resumeProjectHeading
-    {Luna Cloud HSM Team $|$ \emph{Golang, Bash, Git, GitLab CI, Python}}
-    {04/2024 -- 08/2024}
+{\textbf{Thales} $|$ Full-Stack Software Engineer Co-op, LCH Team $|$ \emph{Golang, Bash, GitLab CI, Python}}
+{04/2024 -- 08/2024}
   \resumeItemListStart
-    \resumeItem{Redesigned a Golang-based support tool to automate endpoint and security configuration diagnostics, programmatically reproducing client-reported errors.}
-    \resumeItem{Produced structured terminal output and exportable reports that reduced manual troubleshooting effort; delivered 7 enhancements originally scoped for 2.}
+    \resumeItem{Redesigned a Golang support tool to reproduce client-reported failures from configuration inputs, reducing manual troubleshooting steps for operators.}
+    \resumeItem{Produced structured terminal output and exportable reports to speed up diagnostics and improve issue handoff.}
+    \resumeItem{Delivered 7 enhancements (scoped for 2) by iterating with the team to expand diagnostic coverage and usability.}
     \resumeItem{Developed Bash automation to configure proxies, manage environment variables, build and execute Go services, and clean test artifacts for consistent endpoint testing.}
     \resumeItem{Presented the redesigned support tool to 55+ engineers, project owners, and stakeholders, demonstrating diagnostic improvements and operational impact.}
   \resumeItemListEnd
 
-\vspace{3pt}
+%-----------PROJECTS-----------
+\section{Projects}
 
-%-----------EXPERIENCE-----------
-\section{Projects} 
-
-% --- MCGILL ENGINEERING GAMES ---
 \resumeOrgHeading{McGill Engineering Games}
 
 \resumeProjectHeading
     {VP Machine $|$ \emph{C++, Arduino, Embedded Systems, Motor Control}}
     {01/2025 -- 01/2026}
 \resumeItemListStart
-  \resumeItem{Led a 10+ person team that delivered a competition robot which achieved 50\% of total available points under strict build constraints; received the Partners’ Choice Award for resilience and innovation.}
+  \resumeItem{Led a 10+ person team to deliver a competition robot under strict build constraints; earned the Partners’ Choice Award for resilience and innovation.}
   \resumeItem{Developed and tested C++/Arduino control firmware for two competition robots, tuning motor parameters and integrating Bluetooth communication.}
 \resumeItemListEnd
 
@@ -212,79 +191,64 @@
   \resumeItem{Core member of a 7-person software team that won the Software Engineering competition three consecutive years (2024--2026), competing against 12 universities in time-constrained hackathon-style challenges.}
 \resumeItemListEnd
 
-% --- consulting rewrite ---
-%If for consulting
+% --- Alternate versions kept for tailoring (consulting rewrite) ---
 \resumeProjectHeading
     {VP Machine $|$ \emph{Robotics Systems, C++/Arduino, Rapid Prototyping, Jira, Testing}}
     {01/2025 -- 01/2026}
 \resumeItemListStart
-    \resumeItem{Led a \textbf{10+ person} team and managed delivery through \textbf{50+ Jira tickets}, coordinating materials, meetings, testing, and rapid iteration under tight budget constraints.}
+    \resumeItem{Led a 10+ person team and managed delivery through 50+ Jira tickets, coordinating materials, meetings, testing, and rapid iteration under tight budget constraints.}
     \resumeItem{Translated a competition problem statement into a robotics strategy by analyzing constraints and terrain risks, identifying scoring optimizations, and iterating toward reliable solutions.}
     \resumeItem{Drove a key design pivot after a ramp increased mass beyond tolerance, leveraging terrain interaction to eliminate the ramp and restore lifting reliability under tight constraints.}
-    \resumeItem{Presented solution rationale and performance trade-offs to a panel of professional engineer judges; earned the \textbf{Partners' Choice Award} for innovation and execution.}
+    \resumeItem{Presented solution rationale and performance trade-offs to a panel of professional engineer judges; earned the Partners' Choice Award for innovation and execution.}
 \resumeItemListEnd
 
 \resumeProjectHeading
   {Software Team Member $|$ \emph{C++/Go/Python, Rapid Problem-Solving, Technical Leadership}}
   {09/2023 -- 01/2026}
 \resumeItemListStart
-  \resumeItem{Core member of a \textbf{7-person} team that won the Software Engineering competition \textbf{three consecutive years (2024--2026)}, competing against 12 universities in time-constrained hackathon-style challenges.}
-  \resumeItem{Owned \textbf{technical execution} during the 2026 competition by triaging problems, assigning work to \textbf{3 developers}, and coordinating submissions across multiple challenge categories.}
+  \resumeItem{Core member of a 7-person team that won the Software Engineering competition three consecutive years (2024--2026), competing against 12 universities in time-constrained hackathon-style challenges.}
+  \resumeItem{Owned technical execution during the 2026 competition by triaging problems, assigning work to 3 developers, and coordinating submissions across multiple challenge categories.}
 \resumeItemListEnd
 
-% --- CS GAMES ---
 \resumeOrgHeading{McGill Computer Science Games}
 
 \resumeProjectHeading
   {Team Captain}
   {01/2025 -- 05/2026}
 \resumeItemListStart
-  \resumeItem{Led the 11-member McGill delegation at CS Games 2025, coordinating logistics and scheduling to ensure each member competed in at least two events; co-leading the 2026 delegation.}
-  \resumeItem{Secured team funding through university grant applications and competed in CTF, DevOps, and Web Development events; edited and produced McGill’s official introduction video.}
+  \resumeItem{Led an 11-member McGill delegation at CS Games 2025, coordinating logistics and scheduling to ensure each member competed in 2+ events; co-leading the 2026 delegation.}
+  \resumeItem{Secured \$2,000 in funding through university grant applications and delivered external deliverables (official introduction video) while competing in CTF, DevOps, and Web Development events.}
 \resumeItemListEnd
 
-% for consulting 
 \resumeProjectHeading
-  {Team Captain}
-  {01/2025 -- 05/2026}
-\resumeItemListStart
-  \resumeItem{Led an \textbf{11-member} McGill delegation at CS Games 2025, coordinating logistics and scheduling to ensure each member competed in \textbf{2+ events}; co-leading the 2026 delegation.}
-  \resumeItem{Secured \textbf{\$2,000} in funding through university grant applications to cover most team expenses; managed external deliverables (official introduction video) and competed in CTF, DevOps, and Web Development events.}
-\resumeItemListEnd
-
-% --- RoomieRanks ---
-\resumeProjectHeading
-  {\textbf{RoomieRanks Website} $|$ \emph{Golang, MySQL, Vue.js}}
+  {\textbf{RoomieRanks} (roommate review/ranking web app) $|$ \emph{Golang, MySQL, Vue.js}}
   {01/2025 -- 03/2025}
 \resumeItemListStart
-    \resumeItem{Implemented Vue.js pages end-to-end, integrating API calls and UI logic to deliver complete user flows.}
-    \resumeItem{Built Golang backend services using interfaces and composition (Go-style OOP) for core features.}
-    \resumeItem{Designed and evolved the MySQL data model (tables, relationships, constraints) for user/application data.}
-    \resumeItem{Validated data correctness with targeted SQL sanity checks during debugging and feature iteration.}
+    \resumeItem{Implemented Vue.js pages end-to-end by wiring API calls, state handling, and form validation to deliver complete user flows.}
+    \resumeItem{Built Golang backend services for core features using interfaces and composition to keep modules testable and extensible.}
+    \resumeItem{Designed and evolved the MySQL data model (tables, relationships, constraints) to maintain data integrity for user/application data.}
+    \resumeItem{Reduced debugging time by validating data correctness with targeted SQL sanity checks during feature iteration.}
 \resumeItemListEnd
 
-% --- McGill Formula Electric ---
 \resumeProjectHeading
   {\textbf{McGill Formula Electric Website} $|$ \emph{React.js, CSS, HTML, GitHub}}
   {10/2022 -- 07/2023}
 \resumeItemListStart
   \resumeItem{Spearheaded three major components, including building the full 'Contact Us' page, enhancing user engagement and streamlining communication.}
-  \resumeItem{Collaborated through GitHub and Asana to drive React-based development and coordination.}
+  \resumeItem{Collaborated through GitHub and Asana to coordinate React-based development and delivery.}
   \resumeItem{Developed reusable components with modern patterns to streamline the development process.}
   \resumeItem{Balanced responsibilities in a hybrid setting, effectively managing both remote and in-person work.}
 \resumeItemListEnd
 
-% --- LockIn AI ---
 \resumeProjectHeading
   {\textbf{LockIn AI (Hackathon Project)} $|$ \emph{Python, MediaPipe, React, ElevenLabs API}}
   {01/2026 -- 02/2026}
 \resumeItemListStart
     \resumeItem{Integrated ElevenLabs text-to-speech by writing Python logic to call the API and generate refocus audio prompts.}
     \resumeItem{Contributed to the computer-vision pipeline using MediaPipe face detection and gaze/head-pose cues to classify whether a user is focused, enabling real-time UI feedback.}
-    \resumeItem{Worked on the Python backend to capture and preprocess video frames and stream focus-state updates to a React dashboard via WebSocket; supported the character-based alert system.}
+    \resumeItem{Worked on the Python backend to capture and preprocess video frames and stream focus-state updates to a React dashboard via WebSocket.}
 \resumeItemListEnd
 
-% --- Decision Tree Learning (ECSE 250 A3) ---
 \resumeProjectHeading
   {\textbf{Decision Tree Classifier (ECSE 250)} $|$ \emph{Java, Decision Trees}}
   {11/2023 -- 12/2023}
@@ -294,7 +258,6 @@
     \resumeItem{Implemented inference via tree traversal to a leaf and evaluated performance using test misclassification rate.}
 \resumeItemListEnd
 
-% --- Computer Vision Coursework (ECSE 415) ---
 \resumeProjectHeading
   {\textbf{Computer Vision Assignments (ECSE 415)} $|$ \emph{Python, OpenCV, NumPy}}
   {01/2026 -- 02/2026}
@@ -304,37 +267,15 @@
     \resumeItem{Extracted and matched SIFT features and analyzed scale/rotation effects on matching quality.}
 \resumeItemListEnd
 
-% --- ECSE 321 Game Store ---
 \resumeProjectHeading
   {\textbf{Game Store Platform} $|$ \emph{Vue.js, Java Spring Boot, PostgreSQL}}
-  {11/2024}
+  {09/2024 -- 12/2024}
 \resumeItemListStart
-    \resumeItem{Developed the GameView page in Vue.js from the ground up: built dynamic price and promotion displays based on active offers:contentReference[oaicite:0]{index=0}, enabled customers to like or remove likes on reviews and let owners reply to reviews through conditionally rendered buttons:contentReference[oaicite:1]{index=1}, and added a reply form component for writing and submitting responses:contentReference[oaicite:2]{index=2}.}
-    \resumeItem{Integrated API calls with Vue components to fetch game details and reviews, determine whether a user has liked a review:contentReference[oaicite:3]{index=3}, submit new reviews and replies:contentReference[oaicite:4]{index=4}, and handle add‑to‑cart/wishlist actions; implemented client‑side functions for liking/unliking reviews that update the UI and invoke backend endpoints:contentReference[oaicite:5]{index=5}.}
-    \resumeItem{Extended the Spring Boot backend to support the new review features: added REST endpoints for checking if a user liked a review and for liking/unliking reviews in \texttt{ReviewController.java}:contentReference[oaicite:6]{index=6}, introduced a \texttt{hasReply} property to the review response DTO so the frontend can show reply buttons appropriately:contentReference[oaicite:7]{index=7}, and added service methods \texttt{checkHasLiked}, \texttt{addLike} and \texttt{removeLike} that use the new repository to manage likes:contentReference[oaicite:8]{index=8}:contentReference[oaicite:9]{index=9}.}
-    \resumeItem{Redesigned the data model for review likes: created a \texttt{ReviewLike} entity that links each review to the customer who liked it:contentReference[oaicite:10]{index=10}, replaced the previous list of liked customers with a \texttt{reviewLikes} collection in the \texttt{Review} entity and computed the number of likes from it:contentReference[oaicite:11]{index=11}:contentReference[oaicite:12]{index=12}, added repository queries to detect if a user has liked a review:contentReference[oaicite:13]{index=13}, and wrote integration tests to verify the new endpoints, including checking that the \texttt{/likes} API correctly reports and updates like status:contentReference[oaicite:14]{index=14}.}
+  \resumeItem{Implemented the GameView page in Vue.js, integrating REST endpoints to fetch game details, promotions, and reviews, and wiring client-side logic for cart and wishlist actions.}
+  \resumeItem{Extended a Spring Boot backend with new review APIs, DTO fields, and service methods, plus integration tests that validated request/response behavior and data correctness.}
+  \resumeItem{Designed and iterated on the PostgreSQL schema for reviews and likes, ensuring referential integrity and efficient queries for user interactions.}
 \resumeItemListEnd
 
-
-
-
-
-
-
-
-
-\resumeSubHeadingListEnd
-
-%-----------EDUCATION-----------
-\section{Education}
-\vspace{15pt}
-
-\resumeSubHeadingListStart
-\resumeSubheading   {McGill University}
-    {Aug. 2022 - May. 2027}
-    {Bachelor of Engineering, Software Engineering (Co-op) -- One Year Entrance Scholarship} 
-    {Montreal, Quebec}
-    
 \resumeSubHeadingListEnd
 
 \end{document}
